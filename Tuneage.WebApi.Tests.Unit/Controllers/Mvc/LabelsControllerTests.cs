@@ -50,6 +50,23 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
+        public async Task IndexGet_ShouldGetViewWithLabelsData()
+        {
+            // Arrange
+
+            // Act
+            var result = await _controller.Index();
+            var viewResult = (ViewResult)result;
+            var model = (List<Label>)viewResult.Model;
+
+            // Assert
+            Assert.IsType<ViewResult>(result);
+            Assert.Null(viewResult.ViewName);
+            Assert.Single(model);
+            Assert.Equal(model[0], _existingLabel);
+        }
+
+        [Fact]
         public async Task DetailsGet_ShouldGetDetailsForExistingLabel()
         {
             // Arrange
@@ -213,7 +230,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         [Theory]
         [InlineData(null)]
         [InlineData(NonExistentLabelId)]
-        public async Task DeleteGet_ShouldReturnNotFoundResultWhenCalledWithBadData(int value)
+        public async Task DeleteGet_ShouldReturnNotFoundResultWhenCalledWithBadData(int? value)
         {
             // Arrange
 

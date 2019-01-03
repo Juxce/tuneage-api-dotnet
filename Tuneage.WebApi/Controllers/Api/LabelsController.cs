@@ -51,7 +51,10 @@ namespace Tuneage.WebApi.Controllers.Api
                 return BadRequest();
             }
 
-            _context.Entry(label).State = EntityState.Modified;
+            // The line below represents a change from the standard scaffold line. It merely moves the setting of the
+            // entity's state onto the context object itself, which avoids a null reference issue at test runtime,
+            // where the mocked context's Entry object is missing.
+            _context.SetModified(label); //_context.Entry(label).State = EntityState.Modified;
 
             try
             {

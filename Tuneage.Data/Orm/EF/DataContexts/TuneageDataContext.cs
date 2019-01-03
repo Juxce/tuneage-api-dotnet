@@ -49,6 +49,17 @@ namespace Tuneage.Data.Orm.EF.DataContexts
         //public virtual DbSet<VariousArtistsRelease> VariousArtistsReleases { get; set; }
         //public virtual DbSet<Track> Tracks { get; set; }
 
+        /// <summary>
+        /// This added level of indirection allows for edit (Put) behavior to be mocked on the context so that it can be
+        /// called in unit testing for API controllers. Originally sourced from:
+        /// http://stackoverflow.com/questions/5035323/mocking-or-faking-dbentityentry-or-creating-a-new-dbentityentry
+        /// </summary>
+        /// <param name="entity"></param>
+        public virtual void SetModified(object entity)
+        {
+            Entry(entity).State = EntityState.Modified;
+        }
+
 
 
         /*
