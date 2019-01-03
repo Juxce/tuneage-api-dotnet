@@ -18,8 +18,4 @@
     <ProjectReference Include="..\Tuneage.Domain\Tuneage.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
 </Project>

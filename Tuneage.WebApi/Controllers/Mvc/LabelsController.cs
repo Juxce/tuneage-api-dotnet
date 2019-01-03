@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Tuneage.Data.Orm.EF.DataContexts;
+using Tuneage.Data.Repositories.Sql;
 using Tuneage.Domain.Entities;
 
 namespace Tuneage.WebApi.Controllers.Mvc
@@ -13,16 +14,19 @@ namespace Tuneage.WebApi.Controllers.Mvc
     public class LabelsController : Controller
     {
         private readonly TuneageDataContext _context;
+        //private readonly IEfCoreMsSqlRepository<Label> _repository;
 
-        public LabelsController(TuneageDataContext context)
+        public LabelsController(TuneageDataContext context) //, IEfCoreMsSqlRepository<Label> repository) // TODO: Use eventually after refactoring to repo; leave og scaffold calls behind but commented
         {
             _context = context;
+            //_repository = repository;     // TODO: Use eventually after refactoring to repo; leave og scaffold calls behind but commented
         }
 
         // GET: Labels
         public async Task<IActionResult> Index()
         {
             return View(await _context.Labels.ToListAsync());
+            //return View(await _repository.GetAll());     // TODO: Use eventually after refactoring to repo; leave og scaffold calls behind but commented
         }
 
         // GET: Labels/Details/5

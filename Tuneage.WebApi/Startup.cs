@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tuneage.Data.Orm.EF.DataContexts;
+using Tuneage.Data.Repositories.Sql;
+using Tuneage.Domain.Entities;
 
 namespace Tuneage.WebApi
 {
@@ -40,6 +42,9 @@ namespace Tuneage.WebApi
             // Custom code to register the Data Context with ASP.NET Core's dependency injection IServiceCollection container
             services.AddDbContext<TuneageDataContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("TuneageDataContext")));
+
+            // Custom code to register repositories with ASP.NET Core's dependency injection IServiceCollection container
+            services.AddTransient<IEfCoreMsSqlRepository<Label>, EfCoreMsSqlRepository<Label>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
