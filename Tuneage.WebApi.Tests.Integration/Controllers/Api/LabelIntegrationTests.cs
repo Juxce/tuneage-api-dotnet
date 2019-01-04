@@ -1,10 +1,6 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="LabelIntegrationTests.cs" company="Tuneage">
-//     (c) 2018 Tuneage
-// </copyright>
-//-----------------------------------------------------------------------
-namespace Tuneage.WebApi.Tests.Integration.Controllers.Api
+﻿namespace Tuneage.WebApi.Tests.Integration.Controllers.Api
 {
+    using System.Diagnostics.CodeAnalysis;
     using System.Net;
     using System.Net.Http;
     using System.Threading.Tasks;
@@ -13,9 +9,6 @@ namespace Tuneage.WebApi.Tests.Integration.Controllers.Api
     using Tuneage.WebApi;
     using Xunit;
 
-    /// <summary>
-    /// Tunage Label Integration Tests
-    /// </summary>
     public class LabelIntegrationTests
     {
 
@@ -34,7 +27,7 @@ namespace Tuneage.WebApi.Tests.Integration.Controllers.Api
         public async Task LabelGetAllTestAsync(string method)
         {
             // Arrange
-            var request = new HttpRequestMessage(new HttpMethod(method), "/api/Album/");
+            var request = new HttpRequestMessage(new HttpMethod(method), "/api/Label/");
 
             // Act
             var response = await this.client.SendAsync(request);
@@ -44,24 +37,12 @@ namespace Tuneage.WebApi.Tests.Integration.Controllers.Api
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        /// <summary>
-        /// The album get test async.
-        /// </summary>
-        /// <param name="method">
-        /// The method.
-        /// </param>
-        /// <param name="id">
-        /// The id.
-        /// </param>
-        /// <returns>
-        /// The <see cref="Task"/>.
-        /// </returns>
         [Theory]
         [InlineData("GET", 1)]
-        public async Task AlbumGetTestAsync(string method, int? id = null)
+        public async Task LabelGetTestAsync(string method, int? id = null)
         {
             // Arrange
-            var request = new HttpRequestMessage(new HttpMethod(method), $"/api/Album/{id}");
+            var request = new HttpRequestMessage(new HttpMethod(method), $"/api/Label/{id}");
 
             // Act
             var response = await this.client.SendAsync(request);
@@ -72,5 +53,3 @@ namespace Tuneage.WebApi.Tests.Integration.Controllers.Api
         }
     }
 }
-
-

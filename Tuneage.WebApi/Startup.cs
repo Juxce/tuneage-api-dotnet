@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Tuneage.Data.Orm.EF.DataContexts;
 using Tuneage.Data.Repositories.Sql;
 using Tuneage.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Tuneage.WebApi
 {
@@ -26,8 +27,32 @@ namespace Tuneage.WebApi
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+            public void ConfigureServices(IServiceCollection services)
         {
+
+            /*
+             * From Chinook:
+             services.AddMemoryCache();
+             services.AddResponseCaching();
+             
+            services.ConfigureRepositories()
+                .ConfigureSupervisor()
+                .AddMiddleware()
+                .AddCorsConfiguration()
+                .AddConnectionProvider(Configuration)
+                .AddAppSettings(Configuration);
+
+            services.AddSwaggerGen(s =>
+            {
+                s.SwaggerDoc("v1", new Info
+                {
+                    Title = "Chinook API",
+                    Description = "Chinook Music Store API"
+                });
+            });
+             * */
+
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -36,7 +61,8 @@ namespace Tuneage.WebApi
             });
 
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddMvc();
 
 
             // Custom code to register the Data Context with ASP.NET Core's dependency injection IServiceCollection container
@@ -47,6 +73,7 @@ namespace Tuneage.WebApi
             services.AddTransient<IEfCoreMsSqlRepository<Label>, EfCoreMsSqlRepository<Label>>();
         }
 
+        // From Chinook: public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
@@ -61,6 +88,14 @@ namespace Tuneage.WebApi
                 app.UseHsts();
             }
 
+            /*
+             * From Chinook
+            app.UseCors("AllowAll");
+            app.UseSwagger();
+            app.UseSwaggerUI(s => {
+                s.SwaggerEndpoint("/swagger/v1/swagger.json","v1 docs");
+            });
+             */
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
