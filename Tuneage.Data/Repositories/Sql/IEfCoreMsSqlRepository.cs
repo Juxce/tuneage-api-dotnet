@@ -11,7 +11,7 @@ namespace Tuneage.Data.Repositories.Sql
         void Update(T entity);
         void Add(T entity);
         void Remove(T entity);
-        void SaveChangesAsync();
+        Task<int> SaveChangesAsync();
         bool Any(int id);
     }
 }

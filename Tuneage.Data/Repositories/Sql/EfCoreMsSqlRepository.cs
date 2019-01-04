@@ -14,39 +14,39 @@ namespace Tuneage.Data.Repositories.Sql
             _context = context;
         }
 
-        public Task<List<T>> GetAll()
+        public virtual Task<List<T>> GetAll()
         {
             return _context.Set<T>().ToListAsync();
         }
 
-        public Task<T> Get(int id)
+        public virtual Task<T> Get(int id)
         {
             return _context.Set<T>().FindAsync(id);
         }
 
-        public void SetModified(T entity)
+        public virtual void SetModified(T entity)
         {
             _context.SetModified(entity);
         }
 
-        public void Update(T entity)
+        public virtual void Update(T entity)
         {
             _context.Update(entity);
         }
 
-        public void Add(T entity)
+        public virtual void Add(T entity)
         {
             _context.Set<T>().Add(entity);
         }
 
-        public void Remove(T entity)
+        public virtual void Remove(T entity)
         {
             _context.Set<T>().Remove(entity);
         }
 
-        public void SaveChangesAsync()
+        public virtual Task<int> SaveChangesAsync()
         {
-            _context.SaveChangesAsync();
+            return _context.SaveChangesAsync();
         }
 
         public bool Any(int id)

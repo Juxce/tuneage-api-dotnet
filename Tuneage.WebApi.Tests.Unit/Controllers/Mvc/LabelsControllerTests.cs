@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Tuneage.Data.Orm.EF.DataContexts;
+using Tuneage.Data.Repositories.Sql;
 using Tuneage.Domain.Entities;
 using Tuneage.WebApi.Controllers.Mvc;
 using Xunit;
@@ -16,8 +16,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
 {
     public class LabelsControllerTests : IDisposable
     {
-        private readonly Mock<DbSet<Label>> _mockLabelSet;
-        private readonly Mock<TuneageDataContext> _mockContext;
+        private readonly Mock<EfCoreMsSqlRepository<Label>> _mockRepository;
         private readonly LabelsController _controller;
         private readonly Label _existingLabel, _existingLabelUpdated, _newLabel;
         protected const string DefaultViewActionName = "Index";
@@ -25,8 +24,8 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
 
         public LabelsControllerTests()
         {
-            _mockLabelSet = new Mock<DbSet<Label>>();
-            _mockContext = new Mock<TuneageDataContext>(new DbContextOptions<TuneageDataContext>());
+            var mockLabelSet = new Mock<DbSet<Label>>();
+            var mockContext = new Mock<TuneageDataContext>(new DbContextOptions<TuneageDataContext>());
 
             _existingLabel = new Label() { LabelId = 9, Name = "Fat Wreck Chords", WebsiteUrl = "www.fatwreck.com" };
             _existingLabelUpdated = new Label() { LabelId = 9, Name = "Fat Wreck PARTY", WebsiteUrl = "www.fatwreck.com" };
@@ -34,23 +33,27 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             var labels = new List<Label> { _existingLabel };
             var data = labels.AsQueryable();
             
-            _mockLabelSet.As<IAsyncEnumerable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(
+            mockLabelSet.As<IAsyncEnumerable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(
                 new TestAsyncEnumerator<Label>(data.GetEnumerator())
             );
-            _mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.Provider).Returns(
+            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.Provider).Returns(
                 new TestAsyncQueryProvider<Label>(data.Provider)
             );
-            _mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.Expression).Returns(data.Expression);
-            _mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.ElementType).Returns(data.ElementType);
-            _mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(() => data.GetEnumerator());
-            _mockLabelSet.Setup(mls => mls.FindAsync(_existingLabel.LabelId)).Returns(Task.FromResult(_existingLabel));
+            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.Expression).Returns(data.Expression);
+            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.ElementType).Returns(data.ElementType);
+            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(() => data.GetEnumerator());
+            mockLabelSet.Setup(mls => mls.FindAsync(_existingLabel.LabelId)).Returns(Task.FromResult(_existingLabel));
+            mockContext.Setup(mc => mc.Labels).Returns(mockLabelSet.Object);
 
-            _mockContext.Setup(mc => mc.Labels).Returns(_mockLabelSet.Object);
-            _controller = new LabelsController(_mockContext.Object);
+            _mockRepository = new Mock<EfCoreMsSqlRepository<Label>>(mockContext.Object);
+            _mockRepository.Setup(mr => mr.GetAll()).Returns(Task.FromResult(labels));
+            _mockRepository.Setup(mr => mr.Get(_existingLabel.LabelId)).Returns(Task.FromResult(_existingLabel));
+
+            _controller = new LabelsController(_mockRepository.Object);
         }
 
         [Fact]
-        public async Task IndexGet_ShouldGetViewWithLabelsData()
+        public async Task IndexGet_ShouldCallRepositoryToGetAllEntitiesAndReturnViewWithData()
         {
             // Arrange
 
@@ -60,6 +63,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             var model = (List<Label>)viewResult.Model;
 
             // Assert
+            _mockRepository.Verify(mr => mr.GetAll(), Times.Once);
             Assert.IsType<ViewResult>(result);
             Assert.Null(viewResult.ViewName);
             Assert.Single(model);
@@ -67,7 +71,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
-        public async Task DetailsGet_ShouldGetDetailsForExistingLabel()
+        public async Task DetailsGet_ShouldCallRepositoryToGetDetailsForExistingEntityAndReturnViewWithData()
         {
             // Arrange
 
@@ -77,7 +81,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             var model = (Label)viewResult.Model;
 
             // Assert
-            //_mockLabelSet.Verify(mls => mls.FirstOrDefaultAsync(It.IsAny<CancellationToken>()), Times.Once);  // HOW TO verify this extension method? Need moles?
+            _mockRepository.Verify(mr => mr.Get(_existingLabel.LabelId), Times.Once);
             Assert.Null(viewResult.ViewName);
             Assert.Equal(_existingLabel, model);
         }
@@ -93,6 +97,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             var result = await _controller.Details(value);
 
             // Assert
+            if (value != null) _mockRepository.Verify(mr => mr.Get(It.IsAny<int>()));
             Assert.IsType<NotFoundResult>(result);
             Assert.Equal((int)HttpStatusCode.NotFound, ((NotFoundResult)result).StatusCode);
         }
@@ -113,7 +118,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
-        public async Task CreatePost_ShouldCallContextToAddAndRedirectToIndex()
+        public async Task CreatePost_ShouldCallRepositoryToToAddEntityAndRedirectToIndex()
         {
             // Arrange
 
@@ -122,14 +127,14 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             var redirectToActionResult = (RedirectToActionResult)result;
 
             //Assert
-            _mockContext.Verify(mc => mc.Add(_newLabel), Times.Once);
-            _mockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            _mockRepository.Verify(mr => mr.Add(_newLabel), Times.Once);
+            _mockRepository.Verify(mr => mr.SaveChangesAsync(), Times.Once);
             Assert.NotNull(redirectToActionResult);
             Assert.Equal(DefaultViewActionName, redirectToActionResult.ActionName);
         }
 
         [Fact]
-        public async Task CreatePost_ShouldOnlyReturnViewWithSameLabelWhenModelStateIsNotValid()
+        public async Task CreatePost_ShouldOnlyReturnViewWithSameEntityWhenModelStateIsNotValid()
         {
             // Arrange
             _controller.ModelState.AddModelError("", "Error");
@@ -146,7 +151,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
-        public async Task EditGet_ShouldReturnExistingLabel()
+        public async Task EditGet_ShouldCallRepositoryToGetEntityAndReturnViewWithData()
         {
             // Arrange
 
@@ -156,7 +161,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             var model = (Label)viewResult.Model;
 
             // Assert
-            _mockLabelSet.Verify(mls => mls.FindAsync(_existingLabel.LabelId), Times.Once);
+            _mockRepository.Verify(mr => mr.Get(_existingLabel.LabelId), Times.Once);
             Assert.Null(viewResult.ViewName);
             Assert.NotNull(viewResult.ViewData);
             Assert.Equal(_existingLabel, model);
@@ -165,7 +170,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         [Theory]
         [InlineData(null)]
         [InlineData(NonExistentLabelId)]
-        public async Task EditGet_ShouldReturnNotFoundResultWhenCalledWithBadData(int? value)
+        public async Task EditGet_ShouldCallRepositoryToGetEntityAndReturnNotFoundResultWhenCalledWithBadData(int? value)
         {
             // Arrange
 
@@ -173,12 +178,13 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             var result = await _controller.Edit(value);
 
             // Assert
+            if (value != null) _mockRepository.Verify(mr => mr.Get(It.IsAny<int>()));
             Assert.IsType<NotFoundResult>(result);
             Assert.Equal((int)HttpStatusCode.NotFound, ((NotFoundResult)result).StatusCode);
         }
 
         [Fact]
-        public async Task EditPost_ShouldCallContextToUpdateAndRedirectToIndex()
+        public async Task EditPost_ShouldCallRepositoryToUpdateEntityAndRedirectToIndex()
         {
             // Arrange
 
@@ -187,14 +193,27 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             var redirectToActionResult = (RedirectToActionResult)result;
 
             //Assert
-            _mockContext.Verify(mc => mc.Update(_existingLabelUpdated), Times.Once);
-            _mockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            _mockRepository.Verify(mr => mr.Update(_existingLabelUpdated), Times.Once);
+            _mockRepository.Verify(mr => mr.SaveChangesAsync(), Times.Once);
             Assert.NotNull(redirectToActionResult);
             Assert.Equal(DefaultViewActionName, redirectToActionResult.ActionName);
         }
 
         [Fact]
-        public async Task EditPost_ShouldOnlyReturnViewWithSameLabelWhenModelStateIsNotValid()
+        public async Task EditPost_ShouldReturnNotFoundResultWhenCalledWithNonMatchingIdData()
+        {
+            // Arrange
+            
+            // Act
+            var result = await _controller.Edit(NonExistentLabelId, _existingLabelUpdated);
+
+            // Assert
+            Assert.IsType<NotFoundResult>(result);
+            Assert.Equal((int)HttpStatusCode.NotFound, ((NotFoundResult)result).StatusCode);
+        }
+
+        [Fact]
+        public async Task EditPost_ShouldOnlyReturnViewWithSameEntityWhenModelStateIsNotValid()
         {
             // Arrange
             _controller.ModelState.AddModelError("", "Error");
@@ -211,7 +230,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
-        public async Task DeleteGet_ShouldReturnExistingLabel()
+        public async Task DeleteGet_ShouldCallRepositoryToGetEntityAndReturnViewWithData()
         {
             // Arrange
 
@@ -221,7 +240,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             var model = (Label)viewResult.Model;
 
             // Assert
-            //_mockLabelSet.Verify(mls => mls.FirstOrDefaultAsync(It.IsAny<CancellationToken>()), Times.Once);  // HOW TO verify this extension method? Need moles?
+            _mockRepository.Verify(mr => mr.Get(_existingLabel.LabelId), Times.Once);
             Assert.Null(viewResult.ViewName);
             Assert.NotNull(viewResult.ViewData);
             Assert.Equal(_existingLabel, model);
@@ -238,23 +257,24 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             var result = await _controller.Delete(value);
 
             // Assert
+            if (value != null) _mockRepository.Verify(mr => mr.Get(It.IsAny<int>()));
             Assert.IsType<NotFoundResult>(result);
             Assert.Equal((int)HttpStatusCode.NotFound, ((NotFoundResult)result).StatusCode);
         }
 
         [Fact]
-        public async Task DeleteConfirmedPost_ShouldCallContextToFindRemoveAndRemoveExistingLabelAndThenSave()
+        public async Task DeleteConfirmedPost_ShouldCallRepositoryToFindAndRemoveExistingEntityAndThenSave()
         {
             // Arrange
 
-            //Act
+            // Act
             var result = await _controller.DeleteConfirmed(_existingLabel.LabelId);
             var redirectToActionResult = (RedirectToActionResult)result;
 
-            //Assert
-            _mockLabelSet.Verify(mls => mls.FindAsync(_existingLabel.LabelId), Times.Once);
-            _mockLabelSet.Verify(mls => mls.Remove(_existingLabel), Times.Once);
-            _mockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            // Assert
+            _mockRepository.Verify(mr => mr.Get(_existingLabel.LabelId), Times.Once);
+            _mockRepository.Verify(mr => mr.Remove(_existingLabel), Times.Once);
+            _mockRepository.Verify(mr => mr.SaveChangesAsync(), Times.Once);
             Assert.NotNull(redirectToActionResult);
             Assert.Equal(DefaultViewActionName, redirectToActionResult.ActionName);
         }
