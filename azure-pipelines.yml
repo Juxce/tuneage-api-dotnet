@@ -14,7 +14,7 @@ variables:
 
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+  displayName: 'Build $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
   displayName: Unit Tests
@@ -33,6 +33,9 @@ steps:
     command: test
     projects: '**/*Tests.Integration/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
+
+- script: dotnet publish --output $(Build.ArtifactStagingDirectory)
+  displayName: 'Publish to $(Build.ArtifactStagingDirectory)'
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Build Artifacts
