@@ -17,13 +17,24 @@ steps:
   displayName: 'dotnet build $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
+  displayName: Unit Tests
+  name: unit_tests
+  enabled: true
   inputs:
     command: test
     projects: '**/*Tests.Unit/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
+  displayName: Integration Tests
+  name: integration_tests
+  enabled: true
   inputs:
     command: test
     projects: '**/*Tests.Integration/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Build Artifacts
+  name: publish_build_artifacts
+  enabled: true
