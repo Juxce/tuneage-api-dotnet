@@ -14,7 +14,7 @@ variables:
 
 steps:
 - script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'Build $(buildConfiguration)'
+  displayName: "$(buildConfiguration) Build"
 
 - task: DotNetCoreCLI@2
   displayName: Unit Tests
@@ -41,3 +41,19 @@ steps:
   displayName: Publish Build Artifacts
   name: publish_build_artifacts
   enabled: true
+
+- task: DotNetCoreCLI@2
+  displayName: "Publish $(BuildConfiguration) to $(Build.ArtifactStagingDirectory)"
+  name: Zip Build Artifacts
+  enabled: true
+  inputs:
+    command: publish
+    publishWebProjects: True
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: True
+
+- task: AzureRmWebAppDeployment@3
+  inputs:
+    azureSubscription: '98032fb1-3410-430c-be36-dd4bed72acef'
+    WebAppName: 'TuneageWebAPI'
+    Package: $(System.ArtifactsDirectory)/**/*.zip
