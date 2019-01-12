@@ -44,7 +44,7 @@ steps:
 
 - task: DotNetCoreCLI@2
   displayName: "Publish $(BuildConfiguration) to $(Build.ArtifactStagingDirectory)"
-  name: Zip Build Artifacts
+  name: ZipBuildArtifacts
   enabled: true
   inputs:
     command: publish
@@ -52,8 +52,25 @@ steps:
     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: True
 
-- task: AzureRmWebAppDeployment@3
+# Azure App Service Deploy
+# Update Azure App Services on Windows, Web App on Linux with built-in images or Docker containers, ASP.NET, .NET Core, PHP, Python or Node.js based Web applications, Function Apps on Windows or Linux with Docker Containers, Mobile Apps, API applications, Web Jobs using Web Deploy / Kudu REST APIs
+- task: AzureRmWebAppDeployment@4
   inputs:
-    azureSubscription: '98032fb1-3410-430c-be36-dd4bed72acef'
-    WebAppName: 'TuneageWebAPI'
-    Package: $(System.ArtifactsDirectory)/**/*.zip
+    connectionType: azureRM
+    azureSubscription: 98032fb1-3410-430c-be36-dd4bed72acef 
+    appType: 'webApp' # Required when connectionType == AzureRM# Options: webApp, webAppLinux, webAppContainer, functionApp, functionAppLinux, functionAppContainer, apiApp, mobileApp
+    webAppName: TuneageWebAPI
+    #webConfigParameters: # Optional
+    #appSettings: # Optional
+    #configurationSettings: # Optional
+    #enableCustomDeployment: false # Optional
+    #deploymentType: 'webDeploy' # Required when enableCustomDeployment == True# Options: webDeploy, zipDeploy, runFromZip
+    #takeAppOfflineFlag: true # Optional
+    #setParametersFile: # Optional
+    #removeAdditionalFilesFlag: false # Optional
+    #excludeFilesFromAppDataFlag: true # Optional
+    #additionalArguments: '-retryAttempts:6 -retryInterval:10000' # Optional
+    #renameFilesFlag: true # Optional
+    #enableXmlTransform: # Optional
+    #enableXmlVariableSubstitution: # Optional
+    #jSONFiles: # Optional
