@@ -4,13 +4,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Moq;
 using Tuneage.Data.Orm.EF.DataContexts;
-using Tuneage.Data.Repositories.Sql;
+using Tuneage.Data.Repositories.Sql.EfCore;
+using Tuneage.Data.TestData;
 using Tuneage.Domain.Entities;
 using Xunit;
 
-namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql
+namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
 {
     public class EfCoreMsSqlRepositoryTests : IDisposable
     {
@@ -25,9 +27,9 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql
             _mockLabelSet = new Mock<DbSet<Label>>();
             _mockContext = new Mock<TuneageDataContext>(new DbContextOptions<TuneageDataContext>());
 
-            _existingLabel = new Label() { LabelId = 9, Name = "Fat Wreck Chords", WebsiteUrl = "www.fatwreck.com" };
-            _existingLabelUpdated = new Label() { LabelId = 9, Name = "Fat Wreck PARTY", WebsiteUrl = "www.fatwreck.com" };
-            _newLabel = new Label() { LabelId = 10, Name = "Learning Curve", WebsiteUrl = "http://learningcurverecords.com/" };
+            _existingLabel = TestDataGraph.LabelExisting;
+            _existingLabelUpdated = TestDataGraph.LabelUpdated;
+            _newLabel = TestDataGraph.LabelNew;
             var labels = new List<Label> { _existingLabel };
             var data = labels.AsQueryable();
 
@@ -41,40 +43,95 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql
             _mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.ElementType).Returns(data.ElementType);
             _mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(() => data.GetEnumerator());
             _mockLabelSet.Setup(mls => mls.FindAsync(_existingLabel.LabelId)).Returns(Task.FromResult(_existingLabel));
+            _mockLabelSet.Setup(mls => mls.AddAsync(_newLabel, It.IsAny<CancellationToken>()))
+                .Returns((Label model, CancellationToken token) => Task.FromResult((EntityEntry<Label>)null));
+            _mockLabelSet.Setup(mls => mls.Update(_existingLabelUpdated)).Returns((EntityEntry<Label>)null);
             _mockLabelSet.Setup(mls => mls.Find(_existingLabel.LabelId)).Returns(_existingLabel);
-            _mockLabelSet.Setup(mls => mls.Find(NonExistentLabelId)).Returns((Label) null);
 
             _mockContext.Setup(mc => mc.Labels).Returns(_mockLabelSet.Object);
             _mockContext.Setup(mc => mc.Set<Label>()).Returns(_mockLabelSet.Object);
+
             _repository = new EfCoreMsSqlRepository<Label>(_mockContext.Object);
         }
 
         [Fact]
-        public async Task GetAll_ShouldCallContextToGetAllAndReturnListOfEntityType()
+        public void GetAll_ShouldCallContextToGetAllAndReturnListOfEntityType()
         {
             // Arrange
 
             // Act
-            var result = await _repository.GetAll();
+            var result = _repository.GetAll();
 
             // Assert
-            Assert.IsType<List<Label>>(result);
+            Assert.IsAssignableFrom<IQueryable>(result);
             Assert.Single(result);
-            Assert.Equal(result[0], _existingLabel);
+            Assert.Equal(result.First(), _existingLabel);
         }
 
         [Fact]
-        public async Task Get_ShouldCallContextToFindEntityAndReturnItWhenItExists()
+        public async void GetById_ShouldCallContextToFindEntityAndReturnItWhenItExists()
         {
             // Arrange
 
             // Act
-            var result = await _repository.Get(_existingLabel.LabelId);
+            var result = await _repository.GetById(_existingLabel.LabelId);
 
             // Assert
             _mockLabelSet.Verify(mls => mls.FindAsync(_existingLabel.LabelId), Times.Once);
             Assert.IsType<Label>(result);
             Assert.Equal(result, _existingLabel);
+        }
+
+        [Fact]
+        public async void GetById_ShouldCallContextToFindEntityAndReturnNullWhenItDoesNotExist()
+        {
+            // Arrange
+
+            // Act
+            var result = await _repository.GetById(NonExistentLabelId);
+
+            // Assert
+            _mockLabelSet.Verify(mls => mls.FindAsync(NonExistentLabelId), Times.Once);
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async void Create_ShouldCallContextToAddAndSave()
+        {
+            // Arrange
+
+            // Act
+            await _repository.Create(_newLabel);
+
+            // Assert
+            _mockLabelSet.Verify(mls => mls.AddAsync(_newLabel, It.IsAny<CancellationToken>()), Times.Once);
+            _mockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async void Update_ShouldCallContextToUpdateAndSave()
+        {
+            // Arrange
+
+            // Act
+            await _repository.Update(_existingLabelUpdated.LabelId, _existingLabelUpdated);
+
+            // Assert
+            _mockLabelSet.Verify(mls => mls.Update(_existingLabelUpdated), Times.Once);
+            _mockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()));
+        }
+
+        [Fact]
+        public async void Delete_ShouldCallContextToRemoveAndSave()
+        {
+            // Arrange
+
+            // Act
+            await _repository.Delete(_existingLabel.LabelId);
+
+            // Assert
+            _mockLabelSet.Verify(mls => mls.Remove(_existingLabel), Times.Once);
+            _mockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
 
         [Fact]
@@ -90,55 +147,19 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql
         }
 
         [Fact]
-        public void Update_ShouldCallContextToUpdate()
+        public async void SaveChangesAsync_ShouldCallContextToSaveChangesAsynchronously()
         {
             // Arrange
 
             // Act
-            _repository.Update(_existingLabelUpdated);
-
-            // Assert
-            _mockContext.Verify(mc => mc.Update(_existingLabelUpdated), Times.Once);
-        }
-
-        [Fact]
-        public void Add_ShouldCallContextToAdd()
-        {
-            // Arrange
-
-            // Act
-            _repository.Add(_newLabel);
-
-            // Assert
-            _mockLabelSet.Verify(mls => mls.Add(_newLabel), Times.Once);
-        }
-
-        [Fact]
-        public void Remove_ShouldCallContextToRemove()
-        {
-            // Arrange
-
-            // Act
-            _repository.Remove(_existingLabel);
-
-            // Assert
-            _mockLabelSet.Verify(mls => mls.Remove(_existingLabel), Times.Once);
-        }
-
-        [Fact]
-        public void SaveChangesAsync_ShouldCallContextToSaveChangesAsynchronously()
-        {
-            // Arrange
-
-            // Act
-            _repository.SaveChangesAsync();
+            await _repository.SaveChangesAsync();
 
             // Assert
             _mockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
-        public void Any_ShouldReturnTrueForExistingEntity()
+        public void Any_ShouldReturnTrueForExistingEntityId()
         {
             // Arrange
 
@@ -150,7 +171,7 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql
         }
 
         [Fact]
-        public void Any_ShouldReturnFalseForNonExistentEntity()
+        public void Any_ShouldReturnFalseForNonExistentEntityId()
         {
             // Arrange
 

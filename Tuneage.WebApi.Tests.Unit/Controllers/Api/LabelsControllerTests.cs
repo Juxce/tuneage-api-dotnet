@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Tuneage.Data.Orm.EF.DataContexts;
-using Tuneage.Data.Repositories.Sql;
+using Tuneage.Data.Repositories.Sql.EfCore;
+using Tuneage.Data.TestData;
 using Tuneage.Domain.Entities;
 using Tuneage.WebApi.Controllers.Api;
 using Xunit;
@@ -16,45 +17,42 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
 {
     public class LabelsControllerTests : IDisposable
     {
-        private readonly Mock<DbSet<Label>> _mockLabelSet;
-        private readonly Mock<TuneageDataContext> _mockContext;
-        private readonly Mock<EfCoreMsSqlRepository<Label>> _mockRepository;
+        private readonly Mock<LabelRepository> _mockRepository;
         private readonly LabelsController _controller;
         private readonly Label _existingLabel, _existingLabelUpdated, _newLabel;
-        private const int NonExistentLabelId = 99;
 
         public LabelsControllerTests()
         {
-            _mockLabelSet = new Mock<DbSet<Label>>();
-            _mockContext = new Mock<TuneageDataContext>(new DbContextOptions<TuneageDataContext>());
+            var mockLabelSet = new Mock<DbSet<Label>>();
+            var mockContext = new Mock<TuneageDataContext>(new DbContextOptions<TuneageDataContext>());
 
-            _existingLabel = new Label() { LabelId = 9, Name = "Fat Wreck Chords", WebsiteUrl = "www.fatwreck.com" };
-            _existingLabelUpdated = new Label() { LabelId = 9, Name = "Fat Wreck PARTY", WebsiteUrl = "www.fatwreck.com" };
-            _newLabel = new Label() { LabelId = 10, Name = "Learning Curve", WebsiteUrl = "http://learningcurverecords.com/" };
-            var labels = new List<Label> { _existingLabel };
+            _existingLabel = TestDataGraph.LabelExisting;
+            _existingLabelUpdated = TestDataGraph.LabelUpdated;
+            _newLabel = TestDataGraph.LabelNew;
+            var labels = TestDataGraph.LabelsRaw;
             var data = labels.AsQueryable();
 
-            _mockLabelSet.As<IAsyncEnumerable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(
+            mockLabelSet.As<IAsyncEnumerable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(
                 new TestAsyncEnumerator<Label>(data.GetEnumerator())
             );
-            _mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.Provider).Returns(
+            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.Provider).Returns(
                 new TestAsyncQueryProvider<Label>(data.Provider)
             );
-            _mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.Expression).Returns(data.Expression);
-            _mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.ElementType).Returns(data.ElementType);
-            _mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(() => data.GetEnumerator());
-            _mockLabelSet.Setup(mls => mls.FindAsync(_existingLabel.LabelId)).Returns(Task.FromResult(_existingLabel));
-            _mockContext.Setup(mc => mc.Labels).Returns(_mockLabelSet.Object);
+            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.Expression).Returns(data.Expression);
+            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.ElementType).Returns(data.ElementType);
+            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(() => data.GetEnumerator());
+            mockLabelSet.Setup(mls => mls.FindAsync(_existingLabel.LabelId)).Returns(Task.FromResult(_existingLabel));
+            mockContext.Setup(mc => mc.Labels).Returns(mockLabelSet.Object);
 
-            _mockRepository = new Mock<EfCoreMsSqlRepository<Label>>(_mockContext.Object);
-            _mockRepository.Setup(mr => mr.GetAll()).Returns(Task.FromResult(labels));
-            _mockRepository.Setup(mr => mr.Get(_existingLabel.LabelId)).Returns(Task.FromResult(_existingLabel));
+            _mockRepository = new Mock<LabelRepository>(mockContext.Object);
+            _mockRepository.Setup(mr => mr.GetAllAlphabetical()).Returns(Task.FromResult(TestDataGraph.LabelsAlphabetizedByLabelName));
+            _mockRepository.Setup(mr => mr.GetById(_existingLabel.LabelId)).Returns(Task.FromResult(_existingLabel));
 
             _controller = new LabelsController(_mockRepository.Object);
         }
 
         [Fact]
-        public async Task GetLabels_ShouldCallRepositoryToGetAllEntitiesAndReturnData()
+        public async Task GetLabels_ShouldCallRepositoryToGetAllEntitiesAndReturnDataSortedAlphabeticallyByName()
         {
             // Arrange
 
@@ -63,10 +61,9 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             var model = (List<Label>)result.Value;
 
             // Assert
-            _mockRepository.Verify(mr => mr.GetAll(), Times.Once);
+            _mockRepository.Verify(mr => mr.GetAllAlphabetical(), Times.Once);
             Assert.IsType<ActionResult<IEnumerable<Label>>>(result);
-            Assert.Single(model);
-            Assert.Equal(model[0], _existingLabel);
+            Assert.Equal(TestDataGraph.LabelsAlphabetizedByLabelName, model);
         }
 
         [Fact]
@@ -79,7 +76,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             var model = result.Value;
 
             // Assert
-            _mockRepository.Verify(mr => mr.Get(_existingLabel.LabelId), Times.Once);
+            _mockRepository.Verify(mr => mr.GetById(_existingLabel.LabelId), Times.Once);
             Assert.IsType<ActionResult<Label>>(result);
             Assert.Equal(model, _existingLabel);
         }
@@ -90,10 +87,10 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             // Arrange
 
             // Act
-            var result = await _controller.GetLabel(NonExistentLabelId);
+            var result = await _controller.GetLabel(TestDataGraph.LabelIdNonExistent);
 
             // Assert
-            _mockRepository.Verify(mr => mr.Get(NonExistentLabelId), Times.Once);
+            _mockRepository.Verify(mr => mr.GetById(TestDataGraph.LabelIdNonExistent), Times.Once);
             Assert.IsType<ActionResult<Label>>(result);
             Assert.IsType<NotFoundResult>(result.Result);
             Assert.Null(result.Value);
@@ -120,7 +117,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             // Arrange
 
             // Act
-            var result = await _controller.PutLabel(NonExistentLabelId, _existingLabelUpdated);
+            var result = await _controller.PutLabel(TestDataGraph.LabelIdNonExistent, _existingLabelUpdated);
 
             // Assert
             Assert.IsType<BadRequestResult>(result);
@@ -137,7 +134,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             var model = (Label)createdAtActionResult.Value;
 
             // Assert
-            _mockRepository.Verify(mr => mr.Add(_newLabel), Times.Once);
+            _mockRepository.Verify(mr => mr.Create(_newLabel), Times.Once);
             Assert.IsType<ActionResult<Label>>(result);
             Assert.IsType<CreatedAtActionResult>(result.Result);
             Assert.Equal(_newLabel, model);
@@ -153,9 +150,8 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             var model = result.Value;
 
             // Assert
-            _mockRepository.Verify(mr => mr.Get(_existingLabel.LabelId), Times.Once);
-            _mockRepository.Verify(mr => mr.Remove(_existingLabel), Times.Once);
-            _mockRepository.Verify(mr => mr.SaveChangesAsync(), Times.Once);
+            _mockRepository.Verify(mr => mr.GetById(_existingLabel.LabelId), Times.Once);
+            _mockRepository.Verify(mr => mr.Delete(_existingLabel.LabelId), Times.Once);
             Assert.Equal(_existingLabel, model);
         }
 
@@ -165,10 +161,10 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             // Arrange
 
             // Act
-            var result = await _controller.DeleteLabel(NonExistentLabelId);
+            var result = await _controller.DeleteLabel(TestDataGraph.LabelIdNonExistent);
 
             // Assert
-            _mockRepository.Verify(mr => mr.Get(NonExistentLabelId), Times.Once);
+            _mockRepository.Verify(mr => mr.GetById(TestDataGraph.LabelIdNonExistent), Times.Once);
             Assert.IsType<ActionResult<Label>>(result);
             Assert.IsType<NotFoundResult>(result.Result);
             Assert.Null(result.Value);

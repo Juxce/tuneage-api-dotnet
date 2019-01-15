@@ -1,19 +1,17 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Tuneage.Data.Repositories.Sql;
+using Tuneage.Data.Repositories.Sql.EfCore;
 using Tuneage.Domain.Entities;
 
 namespace Tuneage.WebApi.Controllers.Mvc
 {
     public class LabelsController : Controller
     {
-        //private readonly TuneageDataContext _context;
-        private readonly IEfCoreMsSqlRepository<Label> _repository;
+        private readonly ILabelRepository _repository;
 
-        public LabelsController(IEfCoreMsSqlRepository<Label> repository)
+        public LabelsController(ILabelRepository repository)
         {
-            //_context = context;
             _repository = repository;
         }
 
@@ -21,7 +19,7 @@ namespace Tuneage.WebApi.Controllers.Mvc
         public async Task<IActionResult> Index()
         {
             //return View(await _context.Labels.ToListAsync()); // Original scaffold call using context directly
-            return View(await _repository.GetAll());
+            return View(await _repository.GetAllAlphabetical());
         }
 
         // GET: Labels/Details/5
@@ -33,7 +31,7 @@ namespace Tuneage.WebApi.Controllers.Mvc
             }
 
             //var label = await _context.Labels.FirstOrDefaultAsync(m => m.LabelId == id); // Original scaffold call using context directly
-            var label = await _repository.Get((int)id);
+            var label = await _repository.GetById((int)id);
             if (label == null)
             {
                 return NotFound();
@@ -58,9 +56,8 @@ namespace Tuneage.WebApi.Controllers.Mvc
             if (ModelState.IsValid)
             {
                 //_context.Add(label); // Original scaffold call using context directly
-                _repository.Add(label);
+                await _repository.Create(label);
                 //await _context.SaveChangesAsync(); // Original scaffold call using context directly
-                await _repository.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(label);
@@ -75,7 +72,7 @@ namespace Tuneage.WebApi.Controllers.Mvc
             }
 
             //var label = await _context.Labels.FindAsync(id); // Original scaffold call using context directly
-            var label = await _repository.Get((int) id);
+            var label = await _repository.GetById((int) id);
             if (label == null)
             {
                 return NotFound();
@@ -100,9 +97,8 @@ namespace Tuneage.WebApi.Controllers.Mvc
                 try
                 {
                     //_context.Update(label); // Original scaffold call using context directly
-                    _repository.Update(label);
+                    await _repository.Update(label.LabelId, label);
                     //await _context.SaveChangesAsync(); // Original scaffold call using context directly
-                    await _repository.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -129,7 +125,7 @@ namespace Tuneage.WebApi.Controllers.Mvc
             }
 
             //var label = await _context.Labels.FirstOrDefaultAsync(m => m.LabelId == id); // Original scaffold call using context directly
-            var label = await _repository.Get((int)id);
+            var label = await _repository.GetById((int)id);
             if (label == null)
             {
                 return NotFound();
@@ -144,11 +140,10 @@ namespace Tuneage.WebApi.Controllers.Mvc
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             //var label = await _context.Labels.FindAsync(id); // Original scaffold call using context directly
-            var label = await _repository.Get(id);
+            var label = await _repository.GetById(id);
             //_context.Labels.Remove(label); // Original scaffold call using context directly
-            _repository.Remove(label);
+            await _repository.Delete(label.LabelId);
             //await _context.SaveChangesAsync(); // Original scaffold call using context directly
-            await _repository.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

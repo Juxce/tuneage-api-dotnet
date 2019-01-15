@@ -11,9 +11,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tuneage.Data.Orm.EF.DataContexts;
-using Tuneage.Data.Repositories.Sql;
 using Tuneage.Domain.Entities;
 using Microsoft.Extensions.Logging;
+using Tuneage.Data.Repositories.Sql.EfCore;
 
 namespace Tuneage.WebApi
 {
@@ -71,7 +71,7 @@ namespace Tuneage.WebApi
                 options.UseSqlServer(Configuration.GetConnectionString("TuneageDataContext")));
 
             // Custom code to register repositories with ASP.NET Core's dependency injection IServiceCollection container
-            services.AddTransient<IEfCoreMsSqlRepository<Label>, EfCoreMsSqlRepository<Label>>();
+            services.AddTransient<ILabelRepository, LabelRepository>();
         }
 
         // From Chinook: public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
