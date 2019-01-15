@@ -23,10 +23,10 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
             var mockLabelSet = new Mock<DbSet<Label>>();
             var mockContext = new Mock<TuneageDataContext>(new DbContextOptions<TuneageDataContext>());
 
-            var existingLabel = TestDataGraph.LabelExisting;
-            var existingLabelUpdated = TestDataGraph.LabelUpdated;
-            var newLabel = TestDataGraph.LabelNew;
-            var labels = TestDataGraph.LabelsRaw;
+            var existingLabel = TestDataGraph.Labels.LabelExisting;
+            var existingLabelUpdated = TestDataGraph.Labels.LabelUpdated;
+            var newLabel = TestDataGraph.Labels.LabelNew;
+            var labels = TestDataGraph.Labels.LabelsRaw;
             var data = labels.AsQueryable();
 
             mockLabelSet.As<IAsyncEnumerable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(
@@ -61,7 +61,7 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
 
             // Assert
             Assert.IsType<Task<List<Label>>>(result);
-            Assert.Equal(TestDataGraph.LabelsAlphabetizedByLabelName, model);
+            Assert.Equal(TestDataGraph.Labels.LabelsAlphabetizedByLabelName, model);
         }
 
         public void Dispose()

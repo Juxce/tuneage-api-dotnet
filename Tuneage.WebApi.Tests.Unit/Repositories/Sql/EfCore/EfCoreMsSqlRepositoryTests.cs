@@ -27,9 +27,9 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
             _mockLabelSet = new Mock<DbSet<Label>>();
             _mockContext = new Mock<TuneageDataContext>(new DbContextOptions<TuneageDataContext>());
 
-            _existingLabel = TestDataGraph.LabelExisting;
-            _existingLabelUpdated = TestDataGraph.LabelUpdated;
-            _newLabel = TestDataGraph.LabelNew;
+            _existingLabel = TestDataGraph.Labels.LabelExisting;
+            _existingLabelUpdated = TestDataGraph.Labels.LabelUpdated;
+            _newLabel = TestDataGraph.Labels.LabelNew;
             var labels = new List<Label> { _existingLabel };
             var data = labels.AsQueryable();
 
