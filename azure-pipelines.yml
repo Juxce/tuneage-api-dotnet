@@ -60,7 +60,7 @@ steps:
 - task: AzureRmWebAppDeployment@4
   inputs:
     connectionType: azureRM
-    azureSubscription: 98032fb1-3410-430c-be36-dd4bed72acef 
+    azureSubscription: 98032fb1-3410-430c-be36-dd4bed72acef
     appType: 'webApp' # Required when connectionType == AzureRM# Options: webApp, webAppLinux, webAppContainer, functionApp, functionAppLinux, functionAppContainer, apiApp, mobileApp
     webAppName: TuneageWebAPI
     #webConfigParameters: # Optional
