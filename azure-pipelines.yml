@@ -58,6 +58,7 @@ steps:
 # Azure App Service Deploy
 # Update Azure App Services on Windows, Web App on Linux with built-in images or Docker containers, ASP.NET, .NET Core, PHP, Python or Node.js based Web applications, Function Apps on Windows or Linux with Docker Containers, Mobile Apps, API applications, Web Jobs using Web Deploy / Kudu REST APIs
 - task: AzureRmWebAppDeployment@4
+  enabled: false
   inputs:
     connectionType: azureRM
     azureSubscription: 98032fb1-3410-430c-be36-dd4bed72acef
