@@ -52,7 +52,7 @@ steps:
     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: True
 
-- script: dir $(Build.ArtifactStagingDirectory) /s
+- script: ls $(Build.ArtifactStagingDirectory) 
   displayName: 'Directory of $(Build.ArtifactStagingDirectory)'
 
 # Azure App Service Deploy
