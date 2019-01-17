@@ -56,7 +56,8 @@ steps:
 - script: ls $(Build.ArtifactStagingDirectory) 
   displayName: 'Directory of $(Build.ArtifactStagingDirectory)'
 
-# Azure App Service Deploy
+# Azure App Service Deploy /home/vsts/work/1/s/**/*.zip
+#                          /home/vsts/work/1/a
 # Update Azure App Services on Windows, Web App on Linux with built-in images or Docker containers, ASP.NET, .NET Core, PHP, Python or Node.js based Web applications, Function Apps on Windows or Linux with Docker Containers, Mobile Apps, API applications, Web Jobs using Web Deploy / Kudu REST APIs
 - task: AzureRmWebAppDeployment@4
   enabled: true
@@ -65,6 +66,8 @@ steps:
     azureSubscription: Tuneage-dontnet-api
     appType: 'webApp' # Required when connectionType == AzureRM# Options: webApp, webAppLinux, webAppContainer, functionApp, functionAppLinux, functionAppContainer, apiApp, mobileApp
     webAppName: TuneageWebAPI
+    packageForLinux: '$(Build.ArtifactStagingDirectory)/*.zip' # Required when connectionType == PublishProfile || WebAppKind == WebApp || WebAppKind == ApiApp || WebAppKind == FunctionApp || WebAppKind == MobileApp || WebAppKind == WebAppLinux || WebAppKind == FunctionAppLinux
+    #runtimeStack: # Optional
     #webConfigParameters: # Optional
     #appSettings: # Optional
     #configurationSettings: # Optional
