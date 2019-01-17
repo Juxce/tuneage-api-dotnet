@@ -44,7 +44,7 @@ steps:
   enabled: false
 
 - task: DotNetCoreCLI@2
-  displayName: "Publish $(BuildConfiguration) to $(Build.ArtifactStagingDirectory)"
+  displayName: "Zip $(BuildConfiguration) to $(Build.ArtifactStagingDirectory)"
   name: ZipBuildArtifacts
   enabled: true
   inputs:
@@ -59,10 +59,10 @@ steps:
 # Azure App Service Deploy
 # Update Azure App Services on Windows, Web App on Linux with built-in images or Docker containers, ASP.NET, .NET Core, PHP, Python or Node.js based Web applications, Function Apps on Windows or Linux with Docker Containers, Mobile Apps, API applications, Web Jobs using Web Deploy / Kudu REST APIs
 - task: AzureRmWebAppDeployment@4
-  enabled: false
+  enabled: true
   inputs:
-    connectionType: azureRM
-    azureSubscription: 98032fb1-3410-430c-be36-dd4bed72acef
+    connectionType: AzureRM
+    azureSubscription: Tuneage-dontnet-api
     appType: 'webApp' # Required when connectionType == AzureRM# Options: webApp, webAppLinux, webAppContainer, functionApp, functionAppLinux, functionAppContainer, apiApp, mobileApp
     webAppName: TuneageWebAPI
     #webConfigParameters: # Optional
