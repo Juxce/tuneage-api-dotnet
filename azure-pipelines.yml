@@ -36,11 +36,12 @@ steps:
 
 - script: dotnet publish --output $(Build.ArtifactStagingDirectory)
   displayName: 'Publish to $(Build.ArtifactStagingDirectory)'
+  enabled: false
 
 - task: PublishBuildArtifacts@1
   displayName: Publish Build Artifacts
   name: publish_build_artifacts
-  enabled: true
+  enabled: false
 
 - task: DotNetCoreCLI@2
   displayName: "Publish $(BuildConfiguration) to $(Build.ArtifactStagingDirectory)"
