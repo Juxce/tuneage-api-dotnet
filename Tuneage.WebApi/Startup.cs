@@ -67,8 +67,7 @@ namespace Tuneage.WebApi
 
 
             // Custom code to register the Data Context with ASP.NET Core's dependency injection IServiceCollection container
-            services.AddDbContext<TuneageDataContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("TuneageDataContext")));
+            ConfigureDatabase(services);
 
             // Custom code to register repositories with ASP.NET Core's dependency injection IServiceCollection container
             services.AddTransient<ILabelRepository, LabelRepository>();
@@ -76,7 +75,7 @@ namespace Tuneage.WebApi
 
         // From Chinook: public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -107,6 +106,12 @@ namespace Tuneage.WebApi
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        public virtual void ConfigureDatabase(IServiceCollection services)
+        {
+            services.AddDbContext<TuneageDataContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("TuneageDataContext")));
         }
     }
 }
