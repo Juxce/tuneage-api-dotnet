@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Moq;
-using Tuneage.Data.Orm.EF.DataContexts;
 using Tuneage.Data.Repositories.Sql.EfCore;
 using Tuneage.Data.TestData;
 using Tuneage.Domain.Entities;
@@ -14,18 +12,15 @@ using Xunit;
 
 namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
 {
-    public class EfCoreMsSqlRepositoryTests : IDisposable
+    public class EfCoreMsSqlRepositoryTests : UnitTestFixture
     {
         private readonly Mock<DbSet<Label>> _mockLabelSet;
-        private readonly Mock<TuneageDataContext> _mockContext;
         private readonly EfCoreMsSqlRepository<Label> _repository;
         private readonly Label _existingLabel, _existingLabelUpdated, _newLabel;
-        private const int NonExistentLabelId = 99;
 
         public EfCoreMsSqlRepositoryTests()
         {
             _mockLabelSet = new Mock<DbSet<Label>>();
-            _mockContext = new Mock<TuneageDataContext>(new DbContextOptions<TuneageDataContext>());
 
             _existingLabel = TestDataGraph.Labels.LabelExisting;
             _existingLabelUpdated = TestDataGraph.Labels.LabelUpdated;
@@ -33,25 +28,16 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
             var labels = new List<Label> { _existingLabel };
             var data = labels.AsQueryable();
 
-            _mockLabelSet.As<IAsyncEnumerable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(
-                new TestAsyncEnumerator<Label>(data.GetEnumerator())
-            );
-            _mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.Provider).Returns(
-                new TestAsyncQueryProvider<Label>(data.Provider)
-            );
-            _mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.Expression).Returns(data.Expression);
-            _mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.ElementType).Returns(data.ElementType);
-            _mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(() => data.GetEnumerator());
+            SetupMockDbSet(_mockLabelSet, data);
             _mockLabelSet.Setup(mls => mls.FindAsync(_existingLabel.LabelId)).Returns(Task.FromResult(_existingLabel));
             _mockLabelSet.Setup(mls => mls.AddAsync(_newLabel, It.IsAny<CancellationToken>()))
                 .Returns((Label model, CancellationToken token) => Task.FromResult((EntityEntry<Label>)null));
             _mockLabelSet.Setup(mls => mls.Update(_existingLabelUpdated)).Returns((EntityEntry<Label>)null);
             _mockLabelSet.Setup(mls => mls.Find(_existingLabel.LabelId)).Returns(_existingLabel);
 
-            _mockContext.Setup(mc => mc.Labels).Returns(_mockLabelSet.Object);
-            _mockContext.Setup(mc => mc.Set<Label>()).Returns(_mockLabelSet.Object);
+            SetupMockSetOnMockContext(_mockLabelSet);
 
-            _repository = new EfCoreMsSqlRepository<Label>(_mockContext.Object);
+            _repository = new EfCoreMsSqlRepository<Label>(MockContext.Object);
         }
 
         [Fact]
@@ -88,10 +74,10 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
             // Arrange
 
             // Act
-            var result = await _repository.GetById(NonExistentLabelId);
+            var result = await _repository.GetById(TestDataGraph.Labels.LabelIdNonExistent);
 
             // Assert
-            _mockLabelSet.Verify(mls => mls.FindAsync(NonExistentLabelId), Times.Once);
+            _mockLabelSet.Verify(mls => mls.FindAsync(TestDataGraph.Labels.LabelIdNonExistent), Times.Once);
             Assert.Null(result);
         }
 
@@ -105,7 +91,7 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
 
             // Assert
             _mockLabelSet.Verify(mls => mls.AddAsync(_newLabel, It.IsAny<CancellationToken>()), Times.Once);
-            _mockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()));
+            MockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
 
         [Fact]
@@ -118,7 +104,7 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
 
             // Assert
             _mockLabelSet.Verify(mls => mls.Update(_existingLabelUpdated), Times.Once);
-            _mockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()));
+            MockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
 
         [Fact]
@@ -131,7 +117,7 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
 
             // Assert
             _mockLabelSet.Verify(mls => mls.Remove(_existingLabel), Times.Once);
-            _mockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()));
+            MockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
 
         [Fact]
@@ -143,7 +129,7 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
             _repository.SetModified(_existingLabelUpdated);
 
             // Assert
-            _mockContext.Verify(mc => mc.SetModified(_existingLabelUpdated), Times.Once);
+            MockContext.Verify(mc => mc.SetModified(_existingLabelUpdated), Times.Once);
         }
 
         [Fact]
@@ -155,7 +141,7 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
             await _repository.SaveChangesAsync();
 
             // Assert
-            _mockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+            MockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]
@@ -176,14 +162,10 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
             // Arrange
 
             // Act
-            var result = _repository.Any(NonExistentLabelId);
+            var result = _repository.Any(TestDataGraph.Labels.LabelIdNonExistent);
 
             // Assert
             Assert.False(result);
-        }
-
-        public void Dispose()
-        {
         }
     }
 }

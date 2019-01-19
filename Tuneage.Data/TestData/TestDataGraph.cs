@@ -26,7 +26,7 @@ namespace Tuneage.Data.TestData
 
             public static Label LabelExisting = Label4;
 
-            public static Label LabelNew = new Label() { Name = "Learning Curve", WebsiteUrl = "www.learningcurverecords.com/" };
+            public static Label LabelNew = new Label() { LabelId = 7, Name = "Learning Curve", WebsiteUrl = "www.learningcurverecords.com/" };
 
             public static Label LabelUpdated = new Label() { LabelId = 5, Name = "Blue Note MODIFIED", WebsiteUrl = "www.bluenoteMODIFIED.com" };
 

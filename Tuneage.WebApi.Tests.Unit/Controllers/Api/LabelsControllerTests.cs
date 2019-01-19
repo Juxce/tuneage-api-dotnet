@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using Tuneage.Data.Orm.EF.DataContexts;
 using Tuneage.Data.Repositories.Sql.EfCore;
 using Tuneage.Data.TestData;
 using Tuneage.Domain.Entities;
@@ -15,7 +13,7 @@ using Xunit;
 
 namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
 {
-    public class LabelsControllerTests : IDisposable
+    public class LabelsControllerTests : UnitTestFixture
     {
         private readonly Mock<LabelRepository> _mockRepository;
         private readonly LabelsController _controller;
@@ -24,7 +22,6 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
         public LabelsControllerTests()
         {
             var mockLabelSet = new Mock<DbSet<Label>>();
-            var mockContext = new Mock<TuneageDataContext>(new DbContextOptions<TuneageDataContext>());
 
             _existingLabel = TestDataGraph.Labels.LabelExisting;
             _existingLabelUpdated = TestDataGraph.Labels.LabelUpdated;
@@ -32,19 +29,10 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             var labels = TestDataGraph.Labels.LabelsRaw;
             var data = labels.AsQueryable();
 
-            mockLabelSet.As<IAsyncEnumerable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(
-                new TestAsyncEnumerator<Label>(data.GetEnumerator())
-            );
-            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.Provider).Returns(
-                new TestAsyncQueryProvider<Label>(data.Provider)
-            );
-            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.Expression).Returns(data.Expression);
-            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.ElementType).Returns(data.ElementType);
-            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(() => data.GetEnumerator());
-            mockLabelSet.Setup(mls => mls.FindAsync(_existingLabel.LabelId)).Returns(Task.FromResult(_existingLabel));
-            mockContext.Setup(mc => mc.Labels).Returns(mockLabelSet.Object);
+            SetupMockDbSet(mockLabelSet, data);
 
-            _mockRepository = new Mock<LabelRepository>(mockContext.Object);
+            SetupMockSetOnMockContext(mockLabelSet);
+            _mockRepository = new Mock<LabelRepository>(MockContext.Object);
             _mockRepository.Setup(mr => mr.GetAllAlphabetical()).Returns(Task.FromResult(TestDataGraph.Labels.LabelsAlphabetizedByLabelName));
             _mockRepository.Setup(mr => mr.GetById(_existingLabel.LabelId)).Returns(Task.FromResult(_existingLabel));
 
@@ -82,7 +70,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
         }
 
         [Fact]
-        public async Task GetLabel_ShouldReturnActionResultWithNotFoundResultAttachedWhenCalledWithBadData()
+        public async Task GetLabel_ShouldReturnActionResultWithNotFoundResultAttachedWhenCalledWithBadId()
         {
             // Arrange
 
@@ -156,7 +144,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
         }
 
         [Fact]
-        public async Task DeleteLabel_ShouldCallRepositoryToGetEntityAndReturnActionResultWithNotFoundResultAttachedWhenCalledWithBadData()
+        public async Task DeleteLabel_ShouldCallRepositoryToGetEntityAndReturnActionResultWithNotFoundResultAttachedWhenCalledWithBadId()
         {
             // Arrange
 
@@ -169,12 +157,6 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             Assert.IsType<NotFoundResult>(result.Result);
             Assert.Null(result.Value);
             Assert.Equal((int)HttpStatusCode.NotFound, ((NotFoundResult)result.Result).StatusCode);
-        }
-
-
-
-        public void Dispose()
-        {
         }
     }
 }

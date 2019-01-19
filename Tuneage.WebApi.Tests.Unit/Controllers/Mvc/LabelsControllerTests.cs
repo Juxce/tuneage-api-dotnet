@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using Tuneage.Data.Orm.EF.DataContexts;
 using Tuneage.Data.Repositories.Sql.EfCore;
 using Tuneage.Data.TestData;
 using Tuneage.Domain.Entities;
@@ -15,7 +13,7 @@ using Xunit;
 
 namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
 {
-    public class LabelsControllerTests : IDisposable
+    public class LabelsControllerTests : UnitTestFixture
     {
         private readonly Mock<LabelRepository> _mockRepository;
         private readonly LabelsController _controller;
@@ -25,26 +23,17 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         public LabelsControllerTests()
         {
             var mockLabelSet = new Mock<DbSet<Label>>();
-            var mockContext = new Mock<TuneageDataContext>(new DbContextOptions<TuneageDataContext>());
 
             _existingLabel = TestDataGraph.Labels.LabelExisting;
             _existingLabelUpdated = TestDataGraph.Labels.LabelUpdated;
             _newLabel = TestDataGraph.Labels.LabelNew;
             var labels = TestDataGraph.Labels.LabelsRaw;
             var data = labels.AsQueryable();
-            
-            mockLabelSet.As<IAsyncEnumerable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(
-                new TestAsyncEnumerator<Label>(data.GetEnumerator())
-            );
-            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.Provider).Returns(
-                new TestAsyncQueryProvider<Label>(data.Provider)
-            );
-            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.Expression).Returns(data.Expression);
-            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.ElementType).Returns(data.ElementType);
-            mockLabelSet.As<IQueryable<Label>>().Setup(mls => mls.GetEnumerator()).Returns(() => data.GetEnumerator());
-            mockContext.Setup(mc => mc.Labels).Returns(mockLabelSet.Object);
 
-            _mockRepository = new Mock<LabelRepository>(mockContext.Object);
+            SetupMockDbSet(mockLabelSet, data);
+
+            SetupMockSetOnMockContext(mockLabelSet);
+            _mockRepository = new Mock<LabelRepository>(MockContext.Object);
             _mockRepository.Setup(mr => mr.GetAllAlphabetical()).Returns(Task.FromResult(TestDataGraph.Labels.LabelsAlphabetizedByLabelName));
             _mockRepository.Setup(mr => mr.GetById(_existingLabel.LabelId)).Returns(Task.FromResult(_existingLabel));
 
@@ -52,7 +41,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
-        public async void IndexGet_ShouldCallRepositoryToGetAllEntitiesAndReturnViewWithDataSortedAlphabeticallyByName()
+        public async Task IndexGet_ShouldCallRepositoryToGetAllEntitiesAndReturnViewWithDataSortedAlphabeticallyByName()
         {
             // Arrange
 
@@ -69,7 +58,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
-        public async void DetailsGet_ShouldCallRepositoryToGetDetailsForExistingEntityAndReturnViewWithData()
+        public async Task DetailsGet_ShouldCallRepositoryToGetDetailsForExistingEntityAndReturnViewWithData()
         {
             // Arrange
 
@@ -87,7 +76,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         [Theory]
         [InlineData(null)]
         [InlineData(TestDataGraph.Labels.LabelIdNonExistent)]
-        public async void DetailsGet_ShouldReturnNotFoundResultWhenCalledWithBadData(int? value)
+        public async Task DetailsGet_ShouldReturnNotFoundResultWhenCalledWithBadData(int? value)
         {
             // Arrange
 
@@ -116,7 +105,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
-        public async void CreatePost_ShouldCallRepositoryToToAddEntityAndRedirectToIndex()
+        public async Task CreatePost_ShouldCallRepositoryToToAddEntityAndRedirectToIndex()
         {
             // Arrange
 
@@ -131,7 +120,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
-        public async void CreatePost_ShouldOnlyReturnViewWithSameEntityWhenModelStateIsNotValid()
+        public async Task CreatePost_ShouldOnlyReturnViewWithSameEntityWhenModelStateIsNotValid()
         {
             // Arrange
             _controller.ModelState.AddModelError("", "Error");
@@ -148,7 +137,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
-        public async void EditGet_ShouldCallRepositoryToGetEntityAndReturnViewWithData()
+        public async Task EditGet_ShouldCallRepositoryToGetEntityAndReturnViewWithData()
         {
             // Arrange
 
@@ -167,7 +156,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         [Theory]
         [InlineData(null)]
         [InlineData(TestDataGraph.Labels.LabelIdNonExistent)]
-        public async void EditGet_ShouldCallRepositoryToGetEntityAndReturnNotFoundResultWhenCalledWithBadData(int? value)
+        public async Task EditGet_ShouldCallRepositoryToGetEntityAndReturnNotFoundResultWhenCalledWithBadData(int? value)
         {
             // Arrange
 
@@ -181,7 +170,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
-        public async void EditPost_ShouldCallRepositoryToUpdateEntityAndRedirectToIndex()
+        public async Task EditPost_ShouldCallRepositoryToUpdateEntityAndRedirectToIndex()
         {
             // Arrange
 
@@ -196,7 +185,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
-        public async void EditPost_ShouldReturnNotFoundResultWhenCalledWithNonMatchingIdData()
+        public async Task EditPost_ShouldReturnNotFoundResultWhenCalledWithNonMatchingIdData()
         {
             // Arrange
 
@@ -209,7 +198,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
-        public async void EditPost_ShouldOnlyReturnViewWithSameEntityWhenModelStateIsNotValid()
+        public async Task EditPost_ShouldOnlyReturnViewWithSameEntityWhenModelStateIsNotValid()
         {
             // Arrange
             _controller.ModelState.AddModelError("", "Error");
@@ -226,7 +215,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
-        public async void DeleteGet_ShouldCallRepositoryToGetEntityAndReturnViewWithData()
+        public async Task DeleteGet_ShouldCallRepositoryToGetEntityAndReturnViewWithData()
         {
             // Arrange
 
@@ -245,7 +234,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         [Theory]
         [InlineData(null)]
         [InlineData(TestDataGraph.Labels.LabelIdNonExistent)]
-        public async void DeleteGet_ShouldReturnNotFoundResultWhenCalledWithBadData(int? value)
+        public async Task DeleteGet_ShouldReturnNotFoundResultWhenCalledWithBadData(int? value)
         {
             // Arrange
 
@@ -259,7 +248,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
-        public async void DeleteConfirmedPost_ShouldCallRepositoryToFindAndRemoveExistingEntity()
+        public async Task DeleteConfirmedPost_ShouldCallRepositoryToFindAndRemoveExistingEntity()
         {
             // Arrange
 
@@ -272,12 +261,6 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             _mockRepository.Verify(mr => mr.Delete(_existingLabel.LabelId), Times.Once);
             Assert.NotNull(redirectToActionResult);
             Assert.Equal(DefaultViewActionName, redirectToActionResult.ActionName);
-        }
-
-
-
-        public void Dispose()
-        {
         }
     }
 }

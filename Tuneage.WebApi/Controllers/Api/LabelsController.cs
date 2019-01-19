@@ -12,9 +12,9 @@ namespace Tuneage.WebApi.Controllers.Api
     public class LabelsController : ControllerBase
     {
         //private readonly TuneageDataContext _context;
-        private readonly LabelRepository _repository;
+        private readonly ILabelRepository _repository;
 
-        public LabelsController(LabelRepository repository)
+        public LabelsController(ILabelRepository repository)
         {
             //_context = context;
             _repository = repository;

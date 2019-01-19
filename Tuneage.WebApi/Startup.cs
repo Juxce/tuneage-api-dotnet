@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tuneage.Data.Orm.EF.DataContexts;
-using Tuneage.Domain.Entities;
-using Microsoft.Extensions.Logging;
 using Tuneage.Data.Repositories.Sql.EfCore;
 
 namespace Tuneage.WebApi
@@ -62,13 +54,18 @@ namespace Tuneage.WebApi
 
 
 
+            // Added to provide an identifier for antiforgery ???
+            // https://docs.microsoft.com/en-us/aspnet/core/security/anti-request-forgery?view=aspnetcore-2.2
+            services.AddAntiforgery(options => options.HeaderName = "XSRF-TOKEN");
+
+
+
             services.AddMvc();
 
 
 
             // Custom code to register the Data Context with ASP.NET Core's dependency injection IServiceCollection container
-            services.AddDbContext<TuneageDataContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("TuneageDataContext")));
+            ConfigureDatabase(services);
 
             // Custom code to register repositories with ASP.NET Core's dependency injection IServiceCollection container
             services.AddTransient<ILabelRepository, LabelRepository>();
@@ -76,7 +73,7 @@ namespace Tuneage.WebApi
 
         // From Chinook: public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -107,6 +104,12 @@ namespace Tuneage.WebApi
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        public virtual void ConfigureDatabase(IServiceCollection services)
+        {
+            services.AddDbContext<TuneageDataContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("TuneageDataContext")));
         }
     }
 }
