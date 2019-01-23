@@ -3,11 +3,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Tuneage.Data.Orm.EF.DataContexts;
 using Tuneage.Data.TestData;
 
-namespace Tuneage.WebApi
+namespace Tuneage.WebApi.Test
 {
     public class TestStartup : Startup
     {

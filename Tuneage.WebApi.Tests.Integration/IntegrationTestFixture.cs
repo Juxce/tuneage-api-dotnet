@@ -9,6 +9,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Net.Http.Headers;
+using Tuneage.WebApi.Test;
 using Xunit;
 
 namespace Tuneage.WebApi.Tests.Integration
