@@ -18,10 +18,10 @@ namespace Tuneage.WebApi.Tests.Integration
     {
         protected readonly TestServer Server;
         protected readonly HttpClient Client;
-        protected SetCookieHeaderValue AntiForgeryCookie;
+        protected SetCookieHeaderValue AntiforgeryCookie;
         protected SetCookieHeaderValue AuthenticationCookie;
-        protected string AntiForgeryToken;
-        protected static Regex AntiForgeryFormFieldRegex = 
+        protected string AntiforgeryToken;
+        protected static Regex AntiforgeryFormFieldRegex = 
             new Regex(@"\<input name=""__RequestVerificationToken"" type=""hidden"" value=""([^""]+)"" \/\>");
 
         public IntegrationTestFixture()
@@ -30,46 +30,46 @@ namespace Tuneage.WebApi.Tests.Integration
             Client = Server.CreateClient();
         }
 
-        protected async Task<string> EnsureAntiForgeryToken()
+        protected async Task<string> EnsureAntiforgeryToken()
         {
-            if (AntiForgeryToken != null) return AntiForgeryToken;
+            if (AntiforgeryToken != null) return AntiforgeryToken;
 
             var response = await Client.GetAsync("/labels/create");
             response.EnsureSuccessStatusCode();
             if (response.Headers.TryGetValues("Set-Cookie", out IEnumerable<string> values))
             {
-                AntiForgeryCookie = SetCookieHeaderValue.ParseList(values.ToList()).SingleOrDefault(
-                        c => c.Name.StartsWith(".AspNetCore.AntiForgery.", StringComparison.InvariantCultureIgnoreCase)
+                AntiforgeryCookie = SetCookieHeaderValue.ParseList(values.ToList()).SingleOrDefault(
+                        c => c.Name.StartsWith(".AspNetCore.Antiforgery.", StringComparison.InvariantCultureIgnoreCase)
                     );
             }
-            Assert.NotNull(AntiForgeryCookie);
-            Client.DefaultRequestHeaders.Add("Cookie", new CookieHeaderValue(AntiForgeryCookie.Name, AntiForgeryCookie.Value).ToString());
+            Assert.NotNull(AntiforgeryCookie);
+            Client.DefaultRequestHeaders.Add("Cookie", new CookieHeaderValue(AntiforgeryCookie.Name, AntiforgeryCookie.Value).ToString());
 
             var responseHtml = await response.Content.ReadAsStringAsync();
-            var match = AntiForgeryFormFieldRegex.Match(responseHtml);
-            AntiForgeryToken = match.Success ? match.Groups[1].Captures[0].Value : null;
-            Assert.NotNull(AntiForgeryToken);
+            var match = AntiforgeryFormFieldRegex.Match(responseHtml);
+            AntiforgeryToken = match.Success ? match.Groups[1].Captures[0].Value : null;
+            Assert.NotNull(AntiforgeryToken);
 
-            return AntiForgeryToken;
+            return AntiforgeryToken;
         }
 
-        protected async Task<Dictionary<string, string>> EnsureAntiForgeryTokenOnForm(Dictionary<string, string> formData = null)
+        protected async Task<Dictionary<string, string>> EnsureAntiforgeryTokenOnForm(Dictionary<string, string> formData = null)
         {
             if (formData == null) formData = new Dictionary<string, string>();
 
-            formData.Add("__RequestVerificationToken", await EnsureAntiForgeryToken());
+            formData.Add("__RequestVerificationToken", await EnsureAntiforgeryToken());
             return formData;
         }
 
-        public async Task EnsureAntiForgeryTokenHeader()
+        public async Task EnsureAntiforgeryTokenHeader()
         {
-            Client.DefaultRequestHeaders.Add("XSRF-TOKEN", await EnsureAntiForgeryToken());
+            Client.DefaultRequestHeaders.Add("XSRF-TOKEN", await EnsureAntiforgeryToken());
         }
 
         public async Task EnsureAuthenticationCookie()
         {
             if (AuthenticationCookie != null) return;
-            var formData = await EnsureAntiForgeryTokenOnForm(new Dictionary<string, string>()
+            var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
                 { "Email", "SomePredefinedUserEmail" },
                 { "Password ", "SomePredefinedUserPassword" }
@@ -89,7 +89,7 @@ namespace Tuneage.WebApi.Tests.Integration
 
             // The current pair of anti-forgery cookie+token would no longer be valid, since the tokens are generated
             // based on the authenticated user. We need a new token after authentication. The cookie can remain.
-            AntiForgeryToken = null;
+            AntiforgeryToken = null;
         }
 
         public void Dispose()

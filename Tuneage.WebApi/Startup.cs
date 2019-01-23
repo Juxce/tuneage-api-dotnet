@@ -54,12 +54,6 @@ namespace Tuneage.WebApi
 
 
 
-            // Added to provide an identifier for antiforgery ???
-            // https://docs.microsoft.com/en-us/aspnet/core/security/anti-request-forgery?view=aspnetcore-2.2
-            services.AddAntiforgery(options => options.HeaderName = "XSRF-TOKEN");
-
-
-
             services.AddMvc();
 
 

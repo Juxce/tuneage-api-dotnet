@@ -78,7 +78,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
         public async Task CreatePost_ShouldReturnFoundStatusAndRedirectionLocationToAll()
         {
             // Arrange
-            var formData = await EnsureAntiForgeryTokenOnForm(new Dictionary<string, string>()
+            var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
                 { "LabelId" , (TestDataGraph.Labels.LabelsRaw.Count + 1).ToString() },
                 { "Name", TestDataGraph.Labels.LabelNew.Name },
@@ -100,7 +100,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
         public async Task CreatePost_ShouldReturnErrorWhenCalledWithExistingId()
         {
             // Arrange
-            var formData = await EnsureAntiForgeryTokenOnForm(new Dictionary<string, string>()
+            var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
                 { "LabelId" , TestDataGraph.Labels.LabelExisting.LabelId.ToString() },
                 { "Name", TestDataGraph.Labels.LabelExisting.Name },
@@ -152,7 +152,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
         public async Task EditPost_ShouldReturnFoundStatusAndRedirectionLocationToAll()
         {
             // Arrange
-            var formData = await EnsureAntiForgeryTokenOnForm(new Dictionary<string, string>()
+            var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
                 { "LabelId", TestDataGraph.Labels.LabelUpdated.LabelId.ToString() },
                 { "Name", TestDataGraph.Labels.LabelUpdated.Name },
@@ -174,7 +174,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
         public async Task EditPost_ShouldReturnErrorWhenCalledWithBadId()
         {
             // Arrange
-            var formData = await EnsureAntiForgeryTokenOnForm(new Dictionary<string, string>()
+            var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
                 { "LabelId", TestDataGraph.Labels.LabelIdNonExistent.ToString() },
                 { "Name", TestDataGraph.Labels.LabelUpdated.Name },
@@ -195,7 +195,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
         public async Task EditPost_ShouldReturnNotFoundResultWhenCalledWithNonMatchingIdData()
         {
             // Arrange
-            var formData = await EnsureAntiForgeryTokenOnForm(new Dictionary<string, string>()
+            var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
                 { "LabelId", TestDataGraph.Labels.LabelIdNonExistent.ToString() },
                 { "Name", TestDataGraph.Labels.LabelUpdated.Name },
@@ -232,7 +232,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
         public async Task DeletePost_ShouldReturnViewWithExistingLabelDataRemoved()
         {
             // Arrange
-            var formData = await EnsureAntiForgeryTokenOnForm(new Dictionary<string, string>()
+            var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
                 { "LabelId", TestDataGraph.Labels.LabelExisting.LabelId.ToString() },
                 { "Name", TestDataGraph.Labels.LabelExisting.Name },
@@ -254,7 +254,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
         public async Task DeletePost_ShouldReturnErrorWhenCalledWithBadId()
         {
             // Arrange
-            var formData = await EnsureAntiForgeryTokenOnForm(new Dictionary<string, string>()
+            var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
                 { "LabelId", TestDataGraph.Labels.LabelIdNonExistent.ToString() },
                 { "Name", TestDataGraph.Labels.LabelExisting.Name },

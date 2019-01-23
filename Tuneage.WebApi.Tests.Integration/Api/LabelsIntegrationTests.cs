@@ -16,7 +16,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
         public async Task GetLabels_ShouldReturnAllLabelsInAlphabeticalOrder()
         {
             // Arrange
-            await EnsureAntiForgeryTokenHeader();
+            await EnsureAntiforgeryTokenHeader();
 
             // Act
             var response = await Client.GetAsync("/api/labels/");
@@ -32,7 +32,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
         public async Task GetLabel_ShouldReturnExistingLabel()
         {
             // Arrange
-            await EnsureAntiForgeryTokenHeader();
+            await EnsureAntiforgeryTokenHeader();
             var existingLabel = TestDataGraph.Labels.LabelExisting;
 
             // Act
@@ -49,7 +49,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
         public async Task GetLabel_ShouldReturnNotFoundResultWhenCalledWithBadId()
         {
             // Arrange
-            await EnsureAntiForgeryTokenHeader();
+            await EnsureAntiforgeryTokenHeader();
 
             // Act
             var response = await Client.GetAsync("/api/labels/" + TestDataGraph.Labels.LabelIdNonExistent);
@@ -65,7 +65,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
         public async Task PutLabel_ShouldReturnNoContentResult()
         {
             // Arrange
-            await EnsureAntiForgeryTokenHeader();
+            await EnsureAntiforgeryTokenHeader();
             var updatedLabel = TestDataGraph.Labels.LabelUpdated;
             var contents = new StringContent(JsonConvert.SerializeObject(updatedLabel), Encoding.UTF8, "application/json");
 
@@ -83,7 +83,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
         public async Task PutLabel_ShouldReturnBadRequestResultWhenCalledWithNonMatchingIdData()
         {
             // Arrange
-            await EnsureAntiForgeryTokenHeader();
+            await EnsureAntiforgeryTokenHeader();
             var updatedLabel = TestDataGraph.Labels.LabelUpdated;
             var contents = new StringContent(JsonConvert.SerializeObject(updatedLabel), Encoding.UTF8, "application/json");
 
@@ -101,7 +101,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
         public async Task PostLabel_ShouldReturnAddedLabel()
         {
             // Arrange
-            await EnsureAntiForgeryTokenHeader();
+            await EnsureAntiforgeryTokenHeader();
             var newLabel = TestDataGraph.Labels.LabelNew;
             var contents = new StringContent(JsonConvert.SerializeObject(newLabel), Encoding.UTF8, "application/json");
 
@@ -119,7 +119,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
         public async Task DeleteLabel_ShouldReturnDeletedLabel()
         {
             // Arrange
-            await EnsureAntiForgeryTokenHeader();
+            await EnsureAntiforgeryTokenHeader();
             var existingLabel = TestDataGraph.Labels.LabelExisting;
 
             // Act
@@ -136,7 +136,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
         public async Task DeleteLabel_ShouldReturnNotFoundResultWhenCalledWithBadId()
         {
             // Arrange
-            await EnsureAntiForgeryTokenHeader();
+            await EnsureAntiforgeryTokenHeader();
 
             // Act
             var response = await Client.DeleteAsync("api/labels/" + TestDataGraph.Labels.LabelIdNonExistent);
