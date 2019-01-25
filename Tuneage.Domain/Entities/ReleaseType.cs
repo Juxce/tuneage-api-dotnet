@@ -2,7 +2,7 @@
 {
     public class ReleaseType
     {
-        public virtual string Id
+        public virtual string ReleaseTypeId
         {
             get;
             set;

@@ -1,26 +1,26 @@
 ﻿namespace Tuneage.Domain.Entities
 {
-    public class Label
+    public class ArtistVariousArtistsRelease
     {
-        public virtual int LabelId
+        public int ArtistId
         {
             get;
             set;
         }
 
-        public virtual string Name
+        public Artist Artist
         {
             get;
             set;
         }
 
-        public virtual string WebsiteUrl
+        public int VariousArtistsReleaseId
         {
             get;
             set;
         }
 
-        public virtual Release[] Releases
+        public VariousArtistsRelease VariousArtistRelease
         {
             get;
             set;

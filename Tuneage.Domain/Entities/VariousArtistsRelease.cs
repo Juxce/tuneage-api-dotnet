@@ -2,7 +2,7 @@
 {
     public class VariousArtistsRelease : Release
     {
-        public virtual Artist[] Artists
+        public virtual ArtistVariousArtistsRelease[] ArtistVariousArtistsReleases
         {
             get;
             set;

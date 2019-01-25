@@ -4,7 +4,7 @@ namespace Tuneage.Domain.Entities
 {
     public abstract class Release
     {
-        public virtual int Id
+        public virtual int ReleaseId
         {
             get;
             set;
@@ -40,23 +40,23 @@ namespace Tuneage.Domain.Entities
             set;
         }
 
-        public virtual Track[] Tracks
-        {
-            get;
-            set;
-        }
+        //public virtual Track[] Tracks
+        //{
+        //    get;
+        //    set;
+        //}
 
-        public virtual Cred[] Creds
-        {
-            get;
-            set;
-        }
+        //public virtual Cred[] Creds
+        //{
+        //    get;
+        //    set;
+        //}
 
-        public virtual decimal CreditScoreSum
-        {
-            get;
-            set;
-        }
+        //public virtual decimal CreditScoreSum
+        //{
+        //    get;
+        //    set;
+        //}
 
         public virtual Label Label
         {

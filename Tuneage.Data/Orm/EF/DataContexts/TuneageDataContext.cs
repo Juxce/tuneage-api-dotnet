@@ -26,13 +26,13 @@ namespace Tuneage.Data.Orm.EF.DataContexts
         //public virtual DbSet<Recording> Recordings { get; set; }
         //public virtual DbSet<Credit> Credits { get; set; }
         //public virtual DbSet<Song> Songs { get; set; }
-        //public virtual DbSet<Artist> Artists { get; set; }
-        //public virtual DbSet<PopulismArtist> PopulismArtists { get; set; }
-        //public virtual DbSet<ConceptualArtist> ConceptualArtists { get; set; }
-        //public virtual DbSet<Band> Bands { get; set; }
-        //public virtual DbSet<SoloArtist> SoloArtists { get; set; }
+        public virtual DbSet<Artist> Artists { get; set; }
+        public virtual DbSet<PopulismArtist> PopulismArtists { get; set; }
+        public virtual DbSet<ConceptualArtist> ConceptualArtists { get; set; }
+        public virtual DbSet<Band> Bands { get; set; }
+        public virtual DbSet<SoloArtist> SoloArtists { get; set; }
         //public virtual DbSet<PrincipleArtist> PrincipleArtists { get; set; }
-        //public virtual DbSet<AliasedArtist> AliasedArtists { get; set; }
+        public virtual DbSet<AliasedArtist> AliasedArtists { get; set; }
         //public virtual DbSet<Lineup> Lineups { get; set; }
         //public virtual DbSet<Cred> Creds { get; set; }
         //public virtual DbSet<CoveredByCred> CoveredByCreds { get; set; }
@@ -44,9 +44,10 @@ namespace Tuneage.Data.Orm.EF.DataContexts
         //public virtual DbSet<WeeksOnChartCred> WeeksOnChartCreds { get; set; }
         //public virtual DbSet<SalesRankCred> SalesRankCreds { get; set; }
         //public virtual DbSet<PerformanceCred> PerformanceCreds { get; set; }
-        //public virtual DbSet<Release> Releases { get; set; }
-        //public virtual DbSet<SingleArtistRelease> SingleArtistReleases { get; set; }
-        //public virtual DbSet<VariousArtistsRelease> VariousArtistsReleases { get; set; }
+        public virtual DbSet<Release> Releases { get; set; }
+        public virtual DbSet<SingleArtistRelease> SingleArtistReleases { get; set; }
+        public virtual DbSet<VariousArtistsRelease> VariousArtistsReleases { get; set; }
+        public virtual DbSet<ArtistVariousArtistsRelease> ArtistVariousArtistsReleases { get; set; }
         //public virtual DbSet<Track> Tracks { get; set; }
 
         /// <summary>
@@ -115,6 +116,38 @@ namespace Tuneage.Data.Orm.EF.DataContexts
             ////    .Map<WeeksOnChartCred>(m => m.Requires("NewsworthyCredTypeId").HasValue("WEEKSONCHART"))
             ////    .Map<SalesRankCred>(m => m.Requires("NewsworthyCredTypeId").HasValue("SALESRANK"))
             ////    .Map<PerformanceCred>(m => m.Requires("NewsworthyCredTypeId").HasValue("PERFORMANCE"));
+
+
+
+            //----------------------------------
+            // Tuneage.WebApi Model Inheritance
+            //----------------------------------
+            modelBuilder.Entity<Release>()
+                .HasDiscriminator<string>("ReleaseType")
+                .HasValue<SingleArtistRelease>("SA")
+                .HasValue<VariousArtistsRelease>("VA");
+
+            modelBuilder.Entity<Artist>()
+                .HasDiscriminator<string>("PopulismType")
+                .HasValue<Band>("BAND")
+                .HasValue<SoloArtist>("SOLO");
+
+            // Many-to-many join entity ArtistVariousArtistsRelease setup (Artist and VariousArtistRelease)
+            modelBuilder.Entity<ArtistVariousArtistsRelease>()
+                .HasKey(avar => new { avar.ArtistId, avar.VariousArtistsReleaseId });
+            modelBuilder.Entity<ArtistVariousArtistsRelease>()
+                .HasOne(avar => avar.Artist)
+                .WithMany(a => a.ArtistVariousArtistsReleases)
+                .HasForeignKey(avar => avar.ArtistId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ArtistVariousArtistsRelease>()
+                .HasOne(avar => avar.VariousArtistRelease)
+                .WithMany(var => var.ArtistVariousArtistsReleases)
+                .HasForeignKey(avar => avar.VariousArtistsReleaseId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // PrincipleArtist is not used by this context, and needs to be ignored to avoid multiple cascade paths for the ArtistId
+            modelBuilder.Entity<AliasedArtist>().Ignore(aa => aa.PrincipleArtist);
 
 
 

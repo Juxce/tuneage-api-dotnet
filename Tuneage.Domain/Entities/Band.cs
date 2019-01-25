@@ -2,10 +2,10 @@
 {
     public class Band : PopulismArtist
     {
-        public virtual Lineup[] Lineups
-        {
-            get;
-            set;
-        }
+        //public virtual Lineup[] Lineups
+        //{
+        //    get;
+        //    set;
+        //}
     }
 }
