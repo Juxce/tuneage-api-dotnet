@@ -1,0 +1,66 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serverName": {
+            "value": "tuneage-mssql"
+        },
+        "administratorLogin": {
+            "value": "jMM"
+        },
+        "administratorLoginPassword": {
+            "value": "Password#1"
+        },
+        "databaseUsername": {
+            "value": "jMM"
+        },
+        "databasePassword": {
+            "value": "Password#1"
+        },
+        "databaseName": {
+            "value": "Tunage"
+        },
+        "edition": {
+            "value": "Free"
+        },
+        "collation": {
+            "value": "SQL_Latin1_General_CP1_CI_AS"
+        },
+        "maxSizeBytes": {
+            "value": "33554432"
+        },
+        "requestedServiceObjectiveId": {
+            "value": "6aa3bb3e-7f50-40d6-95ef-5497c30d99d8"
+        },
+        "serverLocation": {
+            "value": "westus2"
+        },
+        "name": {
+            "value": "TuneageWebAPI"
+        },
+        "hostingPlanName": {
+            "value": "ServicePland312c5fd-a619"
+        },
+        "hostingEnvironment": {
+            "value": ""
+        },
+        "location": {
+            "value": "Central US"
+        },
+        "sku": {
+            "value": "Standard"
+        },
+        "workerSize": {
+            "value": "0"
+        },
+        "serverFarmResourceGroup": {
+            "value": "TuneageWebAPI"
+        },
+        "skuCode": {
+            "value": "S1"
+        },
+        "subscriptionId": {
+            "value": "98032fb1-3410-430c-be36-dd4bed72acef"
+        }
+    }
+}
