@@ -1,6 +1,6 @@
 ﻿namespace Tuneage.Domain.Entities
 {
-    public abstract class Artist
+    public class Artist
     {
         public virtual int ArtistId
         {
@@ -21,6 +21,12 @@
         }
 
         public virtual bool IsPrinciple
+        {
+            get;
+            set;
+        }
+
+        public virtual int? PrincipleArtistId
         {
             get;
             set;

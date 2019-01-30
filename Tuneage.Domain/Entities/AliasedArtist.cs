@@ -2,12 +2,6 @@
 {
     public class AliasedArtist : ConceptualArtist
     {
-        public virtual int PrincipleArtistId
-        {
-            get;
-            set;
-        }
-
         public virtual PrincipleArtist PrincipleArtist
         {
             get;

@@ -10,7 +10,7 @@ using Tuneage.Data.Orm.EF.DataContexts;
 namespace Tuneage.Data.Migrations
 {
     [DbContext(typeof(TuneageDataContext))]
-    [Migration("20190130015651_init")]
+    [Migration("20190130042434_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,6 +38,8 @@ namespace Tuneage.Data.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired();
+
+                    b.Property<int?>("PrincipleArtistId");
 
                     b.HasKey("ArtistId");
 
@@ -105,8 +107,6 @@ namespace Tuneage.Data.Migrations
             modelBuilder.Entity("Tuneage.Domain.Entities.AliasedArtist", b =>
                 {
                     b.HasBaseType("Tuneage.Domain.Entities.Artist");
-
-                    b.Property<int>("PrincipleArtistId");
 
                     b.HasDiscriminator().HasValue("Alias");
                 });

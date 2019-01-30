@@ -17,8 +17,8 @@ namespace Tuneage.Data.Migrations
                     Name = table.Column<string>(nullable: false),
                     IsBand = table.Column<bool>(nullable: false),
                     IsPrinciple = table.Column<bool>(nullable: false, defaultValue: false),
-                    ArtistSubtype = table.Column<string>(nullable: false),
-                    PrincipleArtistId = table.Column<int>(nullable: true)
+                    PrincipleArtistId = table.Column<int>(nullable: true),
+                    ArtistSubtype = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {

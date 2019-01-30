@@ -37,6 +37,8 @@ namespace Tuneage.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<int?>("PrincipleArtistId");
+
                     b.HasKey("ArtistId");
 
                     b.ToTable("Artists");
@@ -103,8 +105,6 @@ namespace Tuneage.Data.Migrations
             modelBuilder.Entity("Tuneage.Domain.Entities.AliasedArtist", b =>
                 {
                     b.HasBaseType("Tuneage.Domain.Entities.Artist");
-
-                    b.Property<int>("PrincipleArtistId");
 
                     b.HasDiscriminator().HasValue("Alias");
                 });

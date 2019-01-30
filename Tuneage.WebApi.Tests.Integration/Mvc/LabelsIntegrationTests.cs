@@ -279,7 +279,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Assert
             Assert.False(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-            Assert.Contains("NullReferenceException: Object reference not set to an instance of an object.", responseString);
+            Assert.Contains("ArgumentNullException: Value cannot be null.", responseString);
         }
     }
 }

@@ -6,23 +6,22 @@ using Tuneage.Domain.Entities;
 
 namespace Tuneage.WebApi.Controllers.Mvc
 {
-    public class LabelsController : Controller
+    public class ArtistsController : Controller
     {
-        private readonly ILabelRepository _repository;
+        private readonly IArtistRepository _repository;
 
-        public LabelsController(ILabelRepository repository)
+        public ArtistsController(IArtistRepository repository)
         {
             _repository = repository;
         }
 
-        // GET: Labels
+        // GET: Artists
         public async Task<IActionResult> Index()
         {
-            //return View(await _context.Labels.ToListAsync()); // Original scaffold call using context directly
             return View(await _repository.GetAllAlphabetical());
         }
 
-        // GET: Labels/Details/5
+        // GET: Artists/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -30,40 +29,48 @@ namespace Tuneage.WebApi.Controllers.Mvc
                 return NotFound();
             }
 
-            //var label = await _context.Labels.FirstOrDefaultAsync(m => m.LabelId == id); // Original scaffold call using context directly
-            var label = await _repository.GetById((int)id);
-            if (label == null)
+            var artist = await _repository.GetById((int)id);
+            if (artist == null)
             {
                 return NotFound();
             }
 
-            return View(label);
+            return View(artist);
         }
 
-        // GET: Labels/Create
+        // GET: Artists/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Labels/Create
+        // POST: Artists/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("LabelId,Name,WebsiteUrl")] Label label)
+        public async Task<IActionResult> Create([Bind("ArtistId,Name,IsBand,IsPrinciple,PrincipleArtistId")] Artist artist)
         {
             if (ModelState.IsValid)
             {
-                //_context.Add(label); // Original scaffold call using context directly
-                await _repository.Create(label);
-                //await _context.SaveChangesAsync(); // Original scaffold call using context directly
+                if (!artist.IsPrinciple)
+                    await _repository.Create(new AliasedArtist()
+                        { ArtistId = artist.ArtistId, Name = artist.Name, IsBand = artist.IsBand, PrincipleArtistId = artist.PrincipleArtistId}
+                    );
+                else
+                {
+                    if (artist.IsBand)
+                        await _repository.Create(new Band() { ArtistId = artist.ArtistId, Name = artist.Name });
+                    else
+                        await _repository.Create(new SoloArtist() { ArtistId = artist.ArtistId, Name = artist.Name });
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(label);
+            return View(artist);
         }
 
-        // GET: Labels/Edit/5
+        // GET: Artists/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -71,23 +78,22 @@ namespace Tuneage.WebApi.Controllers.Mvc
                 return NotFound();
             }
 
-            //var label = await _context.Labels.FindAsync(id); // Original scaffold call using context directly
-            var label = await _repository.GetById((int) id);
-            if (label == null)
+            var artist = await _repository.GetById((int)id);
+            if (artist == null)
             {
                 return NotFound();
             }
-            return View(label);
+            return View(artist);
         }
 
-        // POST: Labels/Edit/5
+        // POST: Artists/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("LabelId,Name,WebsiteUrl")] Label label)
+        public async Task<IActionResult> Edit(int id, [Bind("ArtistId,Name,IsBand,IsPrinciple,PrinzEyedee")] Artist artist)
         {
-            if (id != label.LabelId)
+            if (id != artist.ArtistId)
             {
                 return NotFound();
             }
@@ -96,13 +102,11 @@ namespace Tuneage.WebApi.Controllers.Mvc
             {
                 try
                 {
-                    //_context.Update(label); // Original scaffold call using context directly
-                    await _repository.Update(id, label);
-                    //await _context.SaveChangesAsync(); // Original scaffold call using context directly
+                    await _repository.Update(id, artist);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!LabelExists(label.LabelId))
+                    if (!ArtistExists(artist.ArtistId))
                     {
                         return NotFound();
                     }
@@ -113,10 +117,10 @@ namespace Tuneage.WebApi.Controllers.Mvc
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(label);
+            return View(artist);
         }
 
-        // GET: Labels/Delete/5
+        // GET: Artists/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,32 +128,27 @@ namespace Tuneage.WebApi.Controllers.Mvc
                 return NotFound();
             }
 
-            //var label = await _context.Labels.FirstOrDefaultAsync(m => m.LabelId == id); // Original scaffold call using context directly
-            var label = await _repository.GetById((int)id);
-            if (label == null)
+            var artist = await _repository.GetById((int)id);
+            if (artist == null)
             {
                 return NotFound();
             }
 
-            return View(label);
+            return View(artist);
         }
 
-        // POST: Labels/Delete/5
+        // POST: Artists/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            //var label = await _context.Labels.FindAsync(id); // Original scaffold call using context directly
-            var label = await _repository.GetById(id);
-            //_context.Labels.Remove(label); // Original scaffold call using context directly
+            var artist = await _repository.GetById(id);
             await _repository.Delete(id);
-            //await _context.SaveChangesAsync(); // Original scaffold call using context directly
             return RedirectToAction(nameof(Index));
         }
 
-        private bool LabelExists(int id)
+        private bool ArtistExists(int id)
         {
-            //return _context.Labels.Any(e => e.LabelId == id); // Original scaffold call using context directly
             return _repository.Any(id);
         }
     }

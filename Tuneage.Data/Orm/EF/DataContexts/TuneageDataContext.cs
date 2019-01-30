@@ -135,9 +135,9 @@ namespace Tuneage.Data.Orm.EF.DataContexts
             modelBuilder.Entity<Artist>().Property(a => a.Name).IsRequired();
             modelBuilder.Entity<Artist>().Property(a => a.IsPrinciple).HasDefaultValue(true);
 
-            modelBuilder.Entity<AliasedArtist>().Property(aa => aa.PrincipleArtistId).IsRequired();
             modelBuilder.Entity<AliasedArtist>().Property(aa => aa.IsBand).IsRequired();
             modelBuilder.Entity<AliasedArtist>().Property(aa => aa.IsPrinciple).HasDefaultValue(false);
+            modelBuilder.Entity<AliasedArtist>().Ignore(aa => aa.PrincipleArtist);
 
             // Many-to-many join entity ArtistVariousArtistsRelease setup (Artist and VariousArtistRelease)
             // NOTE: The ArtistVariousArtistsRelease object should go away once Tracks/Recordings/Songs are
@@ -154,9 +154,6 @@ namespace Tuneage.Data.Orm.EF.DataContexts
                 .WithMany(var => var.ArtistVariousArtistsReleases)
                 .HasForeignKey(avar => avar.VariousArtistsReleaseId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            // PrincipleArtist is not used by this context, and needs to be ignored to avoid multiple cascade paths for the ArtistId
-            modelBuilder.Entity<AliasedArtist>().Ignore(aa => aa.PrincipleArtist);
 
 
 
