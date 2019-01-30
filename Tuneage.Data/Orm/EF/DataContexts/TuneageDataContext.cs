@@ -10,7 +10,7 @@ namespace Tuneage.Data.Orm.EF.DataContexts
         }
 
         public virtual DbSet<Label> Labels { get; set; }
-        public virtual DbSet<PrimaryCredType> PrimaryCredTypes { get; set; }
+        //public virtual DbSet<PrimaryCredType> PrimaryCredTypes { get; set; }
         //public virtual DbSet<NewsworthyCredType> NewsworthyCredTypes { get; set; }
         //public virtual DbSet<RecordingType> RecordingTypes { get; set; }
         //public virtual DbSet<ConceptualArtistType> ConceptualArtistTypes { get; set; }
@@ -27,11 +27,11 @@ namespace Tuneage.Data.Orm.EF.DataContexts
         //public virtual DbSet<Credit> Credits { get; set; }
         //public virtual DbSet<Song> Songs { get; set; }
         public virtual DbSet<Artist> Artists { get; set; }
-        public virtual DbSet<PopulismArtist> PopulismArtists { get; set; }
-        public virtual DbSet<ConceptualArtist> ConceptualArtists { get; set; }
+        //public virtual DbSet<PopulismArtist> PopulismArtists { get; set; }  // Excluded: Not needed by domain
+        //public virtual DbSet<ConceptualArtist> ConceptualArtists { get; set; }  // Excluded: Not needed by domain
         public virtual DbSet<Band> Bands { get; set; }
         public virtual DbSet<SoloArtist> SoloArtists { get; set; }
-        //public virtual DbSet<PrincipleArtist> PrincipleArtists { get; set; }
+        //public virtual DbSet<PrincipleArtist> PrincipleArtists { get; set; }  // Excluded: Not needed by domain
         public virtual DbSet<AliasedArtist> AliasedArtists { get; set; }
         //public virtual DbSet<Lineup> Lineups { get; set; }
         //public virtual DbSet<Cred> Creds { get; set; }
@@ -76,22 +76,20 @@ namespace Tuneage.Data.Orm.EF.DataContexts
         */
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            #region Previous EF6 relationships code, for reference (syntax has changed with Core)
+
             /*
-             * 12.18.18 - Previous EF6 relationship code has been copied over, but commented out for now, as we focus
-             * solely on Label first. Syntax has changed for much of this. Reference these links when time is right:
+             * Previous EF6 relationship code has been copied and commented for reference. Syntax has changed
+             * from EF6 to EF Core. References:
              *
              * https://docs.microsoft.com/en-us/ef/core/modeling/index
              * https://docs.microsoft.com/en-us/ef/core/modeling/relationships
              */
 
-
-
             ////// Circular relationships
             ////modelBuilder.Entity<SoloArtist>().HasOptional(s => s.Individual).WithOptionalPrincipal();
             ////modelBuilder.Entity<Song>().HasRequired(s => s.Artist).WithMany(a => a.Songs).WillCascadeOnDelete(false);
             ////modelBuilder.Entity<Track>().HasRequired(t => t.Release).WithMany(r => r.Tracks).WillCascadeOnDelete(false);
-
-
 
             ////// Hierarchical type relationships (Table Per Hierarchy Inheritance)
             ////modelBuilder.Entity<Release>()
@@ -117,6 +115,8 @@ namespace Tuneage.Data.Orm.EF.DataContexts
             ////    .Map<SalesRankCred>(m => m.Requires("NewsworthyCredTypeId").HasValue("SALESRANK"))
             ////    .Map<PerformanceCred>(m => m.Requires("NewsworthyCredTypeId").HasValue("PERFORMANCE"));
 
+            #endregion
+            
 
 
             //----------------------------------
@@ -128,11 +128,20 @@ namespace Tuneage.Data.Orm.EF.DataContexts
                 .HasValue<VariousArtistsRelease>("VA");
 
             modelBuilder.Entity<Artist>()
-                .HasDiscriminator<string>("PopulismType")
-                .HasValue<Band>("BAND")
-                .HasValue<SoloArtist>("SOLO");
+                .HasDiscriminator<string>("ArtistSubtype")
+                .HasValue<Band>("Band")
+                .HasValue<SoloArtist>("Solo")
+                .HasValue<AliasedArtist>("Alias");
+            modelBuilder.Entity<Artist>().Property(a => a.Name).IsRequired();
+            modelBuilder.Entity<Artist>().Property(a => a.IsPrinciple).HasDefaultValue(true);
+
+            modelBuilder.Entity<AliasedArtist>().Property(aa => aa.PrincipleArtistId).IsRequired();
+            modelBuilder.Entity<AliasedArtist>().Property(aa => aa.IsBand).IsRequired();
+            modelBuilder.Entity<AliasedArtist>().Property(aa => aa.IsPrinciple).HasDefaultValue(false);
 
             // Many-to-many join entity ArtistVariousArtistsRelease setup (Artist and VariousArtistRelease)
+            // NOTE: The ArtistVariousArtistsRelease object should go away once Tracks/Recordings/Songs are
+            // introduced into the domain.
             modelBuilder.Entity<ArtistVariousArtistsRelease>()
                 .HasKey(avar => new { avar.ArtistId, avar.VariousArtistsReleaseId });
             modelBuilder.Entity<ArtistVariousArtistsRelease>()

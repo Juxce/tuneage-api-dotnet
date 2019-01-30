@@ -18,55 +18,55 @@ namespace Tuneage.Data.Repositories.Sql.EfCore
 
     public class EfCoreMsSqlRepository<TEntity> : IEfCoreMsSqlRepository<TEntity> where TEntity : class
     {
-        private readonly TuneageDataContext _dbContext;
+        protected readonly TuneageDataContext DbContext;
 
         public EfCoreMsSqlRepository(TuneageDataContext dbContext)
         {
-            _dbContext = dbContext;
+            DbContext = dbContext;
         }
 
         public virtual IQueryable<TEntity> GetAll()
         {
-            return _dbContext.Set<TEntity>();
+            return DbContext.Set<TEntity>();
         }
 
         public virtual async Task<TEntity> GetById(int id)
         {
-            return await _dbContext.Set<TEntity>().FindAsync(id);
+            return await DbContext.Set<TEntity>().FindAsync(id);
         }
 
         public virtual async Task Create(TEntity entity)
         {
-            await _dbContext.Set<TEntity>().AddAsync(entity);
-            await _dbContext.SaveChangesAsync();
+            await DbContext.Set<TEntity>().AddAsync(entity);
+            await DbContext.SaveChangesAsync();
         }
 
         public virtual async Task Update(int id, TEntity entity)
         {
-            _dbContext.Set<TEntity>().Update(entity);
-            await _dbContext.SaveChangesAsync();
+            DbContext.Set<TEntity>().Update(entity);
+            await DbContext.SaveChangesAsync();
         }
 
         public virtual async Task Delete(int id)
         {
-            var entity = await _dbContext.Set<TEntity>().FindAsync(id);
-            _dbContext.Set<TEntity>().Remove(entity);
-            await _dbContext.SaveChangesAsync();
+            var entity = await DbContext.Set<TEntity>().FindAsync(id);
+            DbContext.Set<TEntity>().Remove(entity);
+            await DbContext.SaveChangesAsync();
         }
 
         public virtual void SetModified(TEntity entity)
         {
-            _dbContext.SetModified(entity);
+            DbContext.SetModified(entity);
         }
 
         public virtual async Task<int> SaveChangesAsync()
         {
-            return await _dbContext.SaveChangesAsync();
+            return await DbContext.SaveChangesAsync();
         }
 
         public bool Any(int id)
         {
-            var entity = _dbContext.Set<TEntity>().Find(id);
+            var entity = DbContext.Set<TEntity>().Find(id);
 
             return entity != null;
         }

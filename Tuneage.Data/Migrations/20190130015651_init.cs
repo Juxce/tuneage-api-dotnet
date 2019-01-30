@@ -14,11 +14,10 @@ namespace Tuneage.Data.Migrations
                 {
                     ArtistId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: false),
                     IsBand = table.Column<bool>(nullable: false),
-                    IsPrinciple = table.Column<bool>(nullable: false),
-                    CredScoreSum = table.Column<decimal>(nullable: false),
-                    PopulismType = table.Column<string>(nullable: false),
+                    IsPrinciple = table.Column<bool>(nullable: false, defaultValue: false),
+                    ArtistSubtype = table.Column<string>(nullable: false),
                     PrincipleArtistId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
@@ -38,19 +37,6 @@ namespace Tuneage.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Labels", x => x.LabelId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PrimaryCredTypes",
-                columns: table => new
-                {
-                    PrimaryCredTypeId = table.Column<string>(nullable: false),
-                    Description = table.Column<string>(nullable: true),
-                    Weight = table.Column<decimal>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PrimaryCredTypes", x => x.PrimaryCredTypeId);
                 });
 
             migrationBuilder.CreateTable(
@@ -128,9 +114,6 @@ namespace Tuneage.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ArtistVariousArtistsReleases");
-
-            migrationBuilder.DropTable(
-                name: "PrimaryCredTypes");
 
             migrationBuilder.DropTable(
                 name: "Releases");

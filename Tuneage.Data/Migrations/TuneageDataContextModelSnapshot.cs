@@ -25,22 +25,23 @@ namespace Tuneage.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<decimal>("CredScoreSum");
+                    b.Property<string>("ArtistSubtype")
+                        .IsRequired();
 
                     b.Property<bool>("IsBand");
 
-                    b.Property<bool>("IsPrinciple");
+                    b.Property<bool>("IsPrinciple")
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue(false);
 
-                    b.Property<string>("Name");
-
-                    b.Property<string>("PopulismType")
+                    b.Property<string>("Name")
                         .IsRequired();
 
                     b.HasKey("ArtistId");
 
                     b.ToTable("Artists");
 
-                    b.HasDiscriminator<string>("PopulismType").HasValue("Artist");
+                    b.HasDiscriminator<string>("ArtistSubtype").HasValue("Artist");
                 });
 
             modelBuilder.Entity("Tuneage.Domain.Entities.ArtistVariousArtistsRelease", b =>
@@ -71,20 +72,6 @@ namespace Tuneage.Data.Migrations
                     b.ToTable("Labels");
                 });
 
-            modelBuilder.Entity("Tuneage.Domain.Entities.PrimaryCredType", b =>
-                {
-                    b.Property<string>("PrimaryCredTypeId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Description");
-
-                    b.Property<decimal>("Weight");
-
-                    b.HasKey("PrimaryCredTypeId");
-
-                    b.ToTable("PrimaryCredTypes");
-                });
-
             modelBuilder.Entity("Tuneage.Domain.Entities.Release", b =>
                 {
                     b.Property<int>("ReleaseId")
@@ -113,18 +100,27 @@ namespace Tuneage.Data.Migrations
                     b.HasDiscriminator<string>("ReleaseType").HasValue("Release");
                 });
 
-            modelBuilder.Entity("Tuneage.Domain.Entities.ConceptualArtist", b =>
+            modelBuilder.Entity("Tuneage.Domain.Entities.AliasedArtist", b =>
                 {
                     b.HasBaseType("Tuneage.Domain.Entities.Artist");
 
-                    b.HasDiscriminator().HasValue("ConceptualArtist");
+                    b.Property<int>("PrincipleArtistId");
+
+                    b.HasDiscriminator().HasValue("Alias");
                 });
 
-            modelBuilder.Entity("Tuneage.Domain.Entities.PopulismArtist", b =>
+            modelBuilder.Entity("Tuneage.Domain.Entities.Band", b =>
                 {
                     b.HasBaseType("Tuneage.Domain.Entities.Artist");
 
-                    b.HasDiscriminator().HasValue("PopulismArtist");
+                    b.HasDiscriminator().HasValue("Band");
+                });
+
+            modelBuilder.Entity("Tuneage.Domain.Entities.SoloArtist", b =>
+                {
+                    b.HasBaseType("Tuneage.Domain.Entities.Artist");
+
+                    b.HasDiscriminator().HasValue("Solo");
                 });
 
             modelBuilder.Entity("Tuneage.Domain.Entities.SingleArtistRelease", b =>
@@ -143,29 +139,6 @@ namespace Tuneage.Data.Migrations
                     b.HasBaseType("Tuneage.Domain.Entities.Release");
 
                     b.HasDiscriminator().HasValue("VA");
-                });
-
-            modelBuilder.Entity("Tuneage.Domain.Entities.AliasedArtist", b =>
-                {
-                    b.HasBaseType("Tuneage.Domain.Entities.ConceptualArtist");
-
-                    b.Property<int>("PrincipleArtistId");
-
-                    b.HasDiscriminator().HasValue("AliasedArtist");
-                });
-
-            modelBuilder.Entity("Tuneage.Domain.Entities.Band", b =>
-                {
-                    b.HasBaseType("Tuneage.Domain.Entities.PopulismArtist");
-
-                    b.HasDiscriminator().HasValue("BAND");
-                });
-
-            modelBuilder.Entity("Tuneage.Domain.Entities.SoloArtist", b =>
-                {
-                    b.HasBaseType("Tuneage.Domain.Entities.PopulismArtist");
-
-                    b.HasDiscriminator().HasValue("SOLO");
                 });
 
             modelBuilder.Entity("Tuneage.Domain.Entities.ArtistVariousArtistsRelease", b =>
@@ -192,7 +165,7 @@ namespace Tuneage.Data.Migrations
             modelBuilder.Entity("Tuneage.Domain.Entities.SingleArtistRelease", b =>
                 {
                     b.HasOne("Tuneage.Domain.Entities.Artist", "Artist")
-                        .WithMany()
+                        .WithMany("SingleArtistReleases")
                         .HasForeignKey("ArtistId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

@@ -78,9 +78,10 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
         public async Task CreatePost_ShouldReturnFoundStatusAndRedirectionLocationToAll()
         {
             // Arrange
+            var nextId = TestDataGraph.Labels.LabelsRaw.Count + 1;
             var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
-                { "LabelId" , (TestDataGraph.Labels.LabelsRaw.Count + 1).ToString() },
+                { "LabelId" , nextId.ToString() },
                 { "Name", TestDataGraph.Labels.LabelNew.Name },
                 { "WebsiteUrl", TestDataGraph.Labels.LabelNew.WebsiteUrl }
             });
@@ -94,6 +95,16 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             Assert.Equal(HttpStatusCode.Found, response.StatusCode);
             Assert.Equal("/labels", response.Headers.Location.ToString());
             Assert.Equal(string.Empty, responseString);
+
+            // Act
+            var response2 = await Client.GetAsync("/labels/details/" + nextId);
+            var responseString2 = await response2.Content.ReadAsStringAsync();
+
+            // Assert
+            response2.EnsureSuccessStatusCode();
+            Assert.Contains("<title>Details - Tuneage.WebApi</title>", responseString2);
+            Assert.Contains(TestDataGraph.Labels.LabelNew.Name, responseString2);
+            Assert.Contains(TestDataGraph.Labels.LabelNew.WebsiteUrl, responseString2);
         }
 
         [Fact]

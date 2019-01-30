@@ -26,11 +26,11 @@
             set;
         }
 
-        public virtual decimal CredScoreSum
-        {
-            get;
-            set;
-        }
+        //public virtual decimal CredScoreSum
+        //{
+        //    get;
+        //    set;
+        //}
 
         //public virtual Cred[] Creds
         //{
@@ -56,11 +56,11 @@
         //    set;
         //}
 
-        //public virtual SingleArtistRelease[] SingleArtistReleases
-        //{
-        //    get;
-        //    set;
-        //}
+        public virtual SingleArtistRelease[] SingleArtistReleases
+        {
+            get;
+            set;
+        }
 
         public virtual ArtistVariousArtistsRelease[] ArtistVariousArtistsReleases
         {

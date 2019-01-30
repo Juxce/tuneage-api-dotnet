@@ -19,7 +19,7 @@ namespace Tuneage.WebApi.Test
             // Register default database connection with in-memory database
             services.AddDbContext<TuneageDataContext>(options =>
                 options.UseInMemoryDatabase("tuneage_test_db"));
-
+            
             // Register the data seeder
             services.AddTransient<DataSeeder>();
         }
@@ -30,11 +30,7 @@ namespace Tuneage.WebApi.Test
             base.Configure(app, env);
 
             // Now seed the database
-            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
-            {
-                var seeder = serviceScope.ServiceProvider.GetService<DataSeeder>();
-                await seeder.Seed();
-            }
+            await SeedThatThing(app, true);
         }
     }
 }

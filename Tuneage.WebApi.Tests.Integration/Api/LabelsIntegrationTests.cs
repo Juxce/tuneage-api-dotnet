@@ -103,6 +103,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
             // Arrange
             await EnsureAntiforgeryTokenHeader();
             var newLabel = TestDataGraph.Labels.LabelNew;
+            newLabel.LabelId = TestDataGraph.Labels.LabelsRaw.Count + 1;
             var contents = new StringContent(JsonConvert.SerializeObject(newLabel), Encoding.UTF8, "application/json");
 
             // Act
@@ -113,6 +114,15 @@ namespace Tuneage.WebApi.Tests.Integration.Api
             // Assert
             response.EnsureSuccessStatusCode();
             Assert.Equal(JsonConvert.SerializeObject(addedLabel), JsonConvert.SerializeObject(newLabel));
+
+            // Act
+            var response2 = await Client.GetAsync("/api/labels/" + newLabel.LabelId);
+            var responseString2 = await response2.Content.ReadAsStringAsync();
+            var returnedLabel = JsonConvert.DeserializeObject<Label>(responseString2);
+
+            // Assert
+            response2.EnsureSuccessStatusCode();
+            Assert.Equal(JsonConvert.SerializeObject(newLabel), JsonConvert.SerializeObject(returnedLabel));
         }
 
         [Fact]
