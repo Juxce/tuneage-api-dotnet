@@ -24,21 +24,21 @@ namespace Tuneage.Data.TestData
             public static readonly Label Label15 = new Label { LabelId = 15, Name = "Stones Throw", WebsiteUrl = "www.stonesthrow.com" };
             public static readonly Label Label16 = new Label { LabelId = 16, Name = "Epitaph", WebsiteUrl = "www.epitaph.com" };
 
-            public static List<Label> LabelsRaw = new List<Label>
+            public static readonly List<Label> LabelsRaw = new List<Label>
             {
                 Label01, Label02, Label03, Label04, Label05, Label06, Label07, Label08, Label09, Label10, Label11, Label12, Label13, Label14, Label15, Label16
             };
 
-            public static List<Label> LabelsAlphabetizedByLabelName = new List<Label>
+            public static readonly List<Label> LabelsAlphabetizedByLabelName = new List<Label>
             {
                 Label04, Label13, Label12, Label09, Label07, Label10, Label11, Label02, Label06, Label03, Label16, Label05, Label08, Label01, Label14, Label15
             };
 
-            public static Label ExistingLabel = Label04;
+            public static readonly Label ExistingLabel = Label04;
 
-            public static Label NewLabel = new Label { Name = "Learning Curve", WebsiteUrl = "www.learningcurverecords.com" };
+            public static readonly Label NewLabel = new Label { Name = "Learning Curve", WebsiteUrl = "www.learningcurverecords.com" };
 
-            public static Label UpdatedLabel = new Label { LabelId = 6, Name = "Blue Note MODIFIED", WebsiteUrl = "www.bluenoteMODIFIED.com" };
+            public static readonly Label UpdatedLabel = new Label { LabelId = 6, Name = "Blue Note MODIFIED", WebsiteUrl = "www.bluenoteMODIFIED.com" };
 
             public const int NonExistentLabelId = 8675309;
         }
@@ -89,7 +89,7 @@ namespace Tuneage.Data.TestData
             public static readonly Band          Artist42 = new Band          { ArtistId = 42, Name = "Green Day" };
             public static readonly AliasedArtist Artist43 = new AliasedArtist { ArtistId = 43, Name = "Foxboro Hottubs", PrincipleArtistId = 42, IsBand = true };
 
-            public static List<Artist> ArtistsRaw = new List<Artist>
+            public static readonly List<Artist> ArtistsRaw = new List<Artist>
             {
                 Artist01, Artist02, Artist03, Artist04, Artist05, Artist06, Artist07, Artist08, Artist09, Artist10,
                 Artist11, Artist12, Artist13, Artist14, Artist15, Artist16, Artist17, Artist18, Artist19, Artist20,
@@ -98,7 +98,7 @@ namespace Tuneage.Data.TestData
                 Artist41, Artist42, Artist43
             };
 
-            public static List<Artist> ArtistsAlphabetizedByArtistName = new List<Artist>
+            public static readonly List<Artist> ArtistsAlphabetizedByArtistName = new List<Artist>
             {
                 Artist31, Artist03, Artist24, Artist01, Artist19, Artist17, Artist32, Artist40, Artist20, Artist15,
                 Artist36, Artist05, Artist43, Artist42, Artist29, Artist09, Artist37, Artist02, Artist10, Artist27,
@@ -122,27 +122,54 @@ namespace Tuneage.Data.TestData
 
         public class Releases
         {
-            public static readonly SingleArtistRelease Release01 = new SingleArtistRelease     { ReleaseId = 1, LabelId = 1, Title = "Autobiography Of Mistachuck", YearReleased = 1996, ArtistId = 1 };
-            public static readonly SingleArtistRelease Release02 = new SingleArtistRelease     { ReleaseId = 2, LabelId = 1, Title = "Dance Naked", YearReleased = 1994, ArtistId = 2 };
-            public static readonly SingleArtistRelease Release03 = new SingleArtistRelease     { ReleaseId = 3, LabelId = 2, Title = "The New America", YearReleased = 2000, ArtistId = 3 };
-            public static readonly VariousArtistsRelease Release04 = new VariousArtistsRelease { ReleaseId = 4, LabelId = 14, Title = "Rawkus Presents Soundbombing II", YearReleased = 1999, IsByVariousArtists = true, };
-            public static readonly SingleArtistRelease Release05 = new SingleArtistRelease     { ReleaseId = 5, LabelId = 3, Title = "Tha Triflin' Album", YearReleased = 1993, ArtistId = 27 };
-            public static readonly SingleArtistRelease Release06 = new SingleArtistRelease     { ReleaseId = 6, LabelId = 3, Title = "Surfin' Safari", YearReleased = 1962, ArtistId = 28 };
-            public static readonly SingleArtistRelease Release07 = new SingleArtistRelease     { ReleaseId = 7, LabelId = 15, Title = "The Unseen", YearReleased = 2000, ArtistId = 26 };
-            public static readonly SingleArtistRelease Release08 = new SingleArtistRelease     { ReleaseId = 8, LabelId = 15, Title = "Veins", YearReleased = 2017, ArtistId = 29 };
-            public static readonly SingleArtistRelease Release09 = new SingleArtistRelease     { ReleaseId = 9, LabelId = 2, Title = "The Yes Album", YearReleased = 1971, ArtistId = 30 };
-            public static readonly SingleArtistRelease Release10 = new SingleArtistRelease     { ReleaseId = 10, LabelId = 13, Title = "Homecoming [EP]", YearReleased = 2015, ArtistId = 31 };
-            public static readonly SingleArtistRelease Release11 = new SingleArtistRelease     { ReleaseId = 11, LabelId = 4, Title = "Occult Hymn [EP]", YearReleased = 2006, ArtistId = 32 };
-            public static readonly SingleArtistRelease Release12 = new SingleArtistRelease     { ReleaseId = 12, LabelId = 12, Title = "Don't Stop Rappin'", YearReleased = 1983, ArtistId = 33 };
-            public static readonly SingleArtistRelease Release13 = new SingleArtistRelease     { ReleaseId = 13, LabelId = 16, Title = "Punk In Drublic", YearReleased = 1994, ArtistId = 34 };
-            public static readonly SingleArtistRelease Release14 = new SingleArtistRelease     { ReleaseId = 14, LabelId = 5, Title = "Hoss", YearReleased = 1995, ArtistId = 35 };
-            public static readonly SingleArtistRelease Release15 = new SingleArtistRelease     { ReleaseId = 15, LabelId = 5, Title = "The War On Errorism", YearReleased = 2003, ArtistId = 34 };
-            public static readonly SingleArtistRelease Release16 = new SingleArtistRelease     { ReleaseId = 16, LabelId = 11, Title = "The Long Run", YearReleased = 1979, ArtistId = 36 };
-            public static readonly SingleArtistRelease Release17 = new SingleArtistRelease     { ReleaseId = 17, LabelId = 6, Title = "Blue Train", YearReleased = 1957, ArtistId = 37 };
-            public static readonly SingleArtistRelease Release18 = new SingleArtistRelease     { ReleaseId = 18, LabelId = 10, Title = "Aja", YearReleased = 1977, ArtistId = 38 };
-            public static readonly SingleArtistRelease Release19 = new SingleArtistRelease     { ReleaseId = 19, LabelId = 7, Title = "The Listening", YearReleased = 2002, ArtistId = 39 };
-            public static readonly SingleArtistRelease Release20 = new SingleArtistRelease     { ReleaseId = 20, LabelId = 9, Title = "And The Anonymous Nobody", YearReleased = 2016, ArtistId = 40 };
-            public static readonly SingleArtistRelease Release21 = new SingleArtistRelease     { ReleaseId = 21, LabelId = 8, Title = "Energy", YearReleased = 1989, ArtistId = 41 };
+            public static readonly SingleArtistRelease   Release01 = new SingleArtistRelease       { ReleaseId = 1, LabelId = 1, Title = "Autobiography Of Mistachuck", YearReleased = 1996, ArtistId = 1 };
+            public static readonly SingleArtistRelease   Release02 = new SingleArtistRelease       { ReleaseId = 2, LabelId = 1, Title = "Dance Naked", YearReleased = 1994, ArtistId = 2 };
+            public static readonly SingleArtistRelease   Release03 = new SingleArtistRelease       { ReleaseId = 3, LabelId = 2, Title = "The New America", YearReleased = 2000, ArtistId = 3 };
+            public static readonly VariousArtistsRelease Release04 = new VariousArtistsRelease     { ReleaseId = 4, LabelId = 14, Title = "Rawkus Presents Soundbombing II", YearReleased = 1999, IsByVariousArtists = true, };
+            public static readonly SingleArtistRelease   Release05 = new SingleArtistRelease       { ReleaseId = 5, LabelId = 3, Title = "Tha Triflin' Album", YearReleased = 1993, ArtistId = 27 };
+            public static readonly SingleArtistRelease   Release06 = new SingleArtistRelease       { ReleaseId = 6, LabelId = 3, Title = "Surfin' Safari", YearReleased = 1962, ArtistId = 28 };
+            public static readonly SingleArtistRelease   Release07 = new SingleArtistRelease       { ReleaseId = 7, LabelId = 15, Title = "The Unseen", YearReleased = 2000, ArtistId = 26 };
+            public static readonly SingleArtistRelease   Release08 = new SingleArtistRelease       { ReleaseId = 8, LabelId = 15, Title = "Veins", YearReleased = 2017, ArtistId = 29 };
+            public static readonly SingleArtistRelease   Release09 = new SingleArtistRelease       { ReleaseId = 9, LabelId = 2, Title = "The Yes Album", YearReleased = 1971, ArtistId = 30 };
+            public static readonly SingleArtistRelease   Release10 = new SingleArtistRelease       { ReleaseId = 10, LabelId = 13, Title = "Homecoming [EP]", YearReleased = 2015, ArtistId = 31 };
+            public static readonly SingleArtistRelease   Release11 = new SingleArtistRelease       { ReleaseId = 11, LabelId = 4, Title = "Occult Hymn [EP]", YearReleased = 2006, ArtistId = 32 };
+            public static readonly SingleArtistRelease   Release12 = new SingleArtistRelease       { ReleaseId = 12, LabelId = 12, Title = "Don't Stop Rappin'", YearReleased = 1983, ArtistId = 33 };
+            public static readonly SingleArtistRelease   Release13 = new SingleArtistRelease       { ReleaseId = 13, LabelId = 16, Title = "Punk In Drublic", YearReleased = 1994, ArtistId = 34 };
+            public static readonly SingleArtistRelease   Release14 = new SingleArtistRelease       { ReleaseId = 14, LabelId = 5, Title = "Hoss", YearReleased = 1995, ArtistId = 35 };
+            public static readonly SingleArtistRelease   Release15 = new SingleArtistRelease       { ReleaseId = 15, LabelId = 5, Title = "The War On Errorism", YearReleased = 2003, ArtistId = 34 };
+            public static readonly SingleArtistRelease   Release16 = new SingleArtistRelease       { ReleaseId = 16, LabelId = 11, Title = "The Long Run", YearReleased = 1979, ArtistId = 36 };
+            public static readonly SingleArtistRelease   Release17 = new SingleArtistRelease       { ReleaseId = 17, LabelId = 6, Title = "Blue Train", YearReleased = 1957, ArtistId = 37 };
+            public static readonly SingleArtistRelease   Release18 = new SingleArtistRelease       { ReleaseId = 18, LabelId = 10, Title = "Aja", YearReleased = 1977, ArtistId = 38 };
+            public static readonly SingleArtistRelease   Release19 = new SingleArtistRelease       { ReleaseId = 19, LabelId = 7, Title = "The Listening", YearReleased = 2002, ArtistId = 39 };
+            public static readonly SingleArtistRelease   Release20 = new SingleArtistRelease       { ReleaseId = 20, LabelId = 9, Title = "And The Anonymous Nobody", YearReleased = 2016, ArtistId = 40 };
+            public static readonly SingleArtistRelease   Release21 = new SingleArtistRelease       { ReleaseId = 21, LabelId = 8, Title = "Energy", YearReleased = 1989, ArtistId = 41 };
+
+            public static readonly List<Release> ReleasesRaw = new List<Release>
+            {
+                Release01, Release02, Release03, Release04, Release05, Release06, Release07, Release08, Release09, Release10,
+                Release11, Release12, Release13, Release14, Release15, Release16, Release17, Release18, Release19, Release20,
+                Release21
+            };
+
+            public static readonly List<Release> ReleasesSortedAlphabeticallyByTitle = new List<Release>
+            {
+                Release10, Release09, Release01, Release06, Release02, Release12, Release21, Release10, Release14, Release11,
+                Release13, Release04, Release06, Release05, Release19, Release16, Release03, Release07, Release15, Release02,
+                Release08
+            };
+
+            public static readonly Release ExistingRelease = Release05;
+
+            public static readonly Release NewSingleArtistRelease =
+                new Release { ReleaseId = 22, LabelId = 16, Title = "Pump Up The Valuum", YearReleased = 2000, IsByVariousArtists = false, ArtistId = 34 };
+
+            public static readonly Release NewVariousArtistsRelease =
+                new Release { ReleaseId = 23, LabelId = 5, Title = "Life In The Fat Lane", YearReleased = 2000, IsByVariousArtists = true };
+
+            public static readonly Release UpdatedRelease = 
+                new Release { ReleaseId = 9, LabelId = 5, Title = "The Yes Album UPDATED", YearReleased = 1777, IsByVariousArtists = false, ArtistId = 20 };
+
+            public const int NonExistentReleaseId = 666;
         }
 
         public class ArtistVariousArtistReleases

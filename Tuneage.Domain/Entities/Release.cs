@@ -2,7 +2,7 @@
 
 namespace Tuneage.Domain.Entities
 {
-    public abstract class Release
+    public class Release
     {
         public virtual int ReleaseId
         {
@@ -35,6 +35,12 @@ namespace Tuneage.Domain.Entities
         }
 
         public virtual bool IsByVariousArtists
+        {
+            get;
+            set;
+        }
+
+        public virtual int? ArtistId
         {
             get;
             set;

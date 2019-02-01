@@ -10,7 +10,7 @@ using Tuneage.Data.Orm.EF.DataContexts;
 namespace Tuneage.Data.Migrations
 {
     [DbContext(typeof(TuneageDataContext))]
-    [Migration("20190130042434_init")]
+    [Migration("20190201233547_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -82,6 +82,8 @@ namespace Tuneage.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("ArtistId");
+
                     b.Property<bool>("IsByVariousArtists");
 
                     b.Property<int>("LabelId");
@@ -129,8 +131,6 @@ namespace Tuneage.Data.Migrations
                 {
                     b.HasBaseType("Tuneage.Domain.Entities.Release");
 
-                    b.Property<int>("ArtistId");
-
                     b.HasIndex("ArtistId");
 
                     b.HasDiscriminator().HasValue("SA");
@@ -168,8 +168,7 @@ namespace Tuneage.Data.Migrations
                 {
                     b.HasOne("Tuneage.Domain.Entities.Artist", "Artist")
                         .WithMany("SingleArtistReleases")
-                        .HasForeignKey("ArtistId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ArtistId");
                 });
 #pragma warning restore 612, 618
         }

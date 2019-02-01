@@ -50,8 +50,8 @@ namespace Tuneage.Data.Migrations
                     ReleasedOn = table.Column<DateTime>(nullable: false),
                     LabelId = table.Column<int>(nullable: false),
                     IsByVariousArtists = table.Column<bool>(nullable: false),
-                    ReleaseType = table.Column<string>(nullable: false),
-                    ArtistId = table.Column<int>(nullable: true)
+                    ArtistId = table.Column<int>(nullable: true),
+                    ReleaseType = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,7 +67,7 @@ namespace Tuneage.Data.Migrations
                         column: x => x.ArtistId,
                         principalTable: "Artists",
                         principalColumn: "ArtistId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(

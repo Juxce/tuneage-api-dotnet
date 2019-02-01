@@ -10,4 +10,9 @@ namespace Tuneage.Data.Constants
         public const string Band = "Tuneage.Domain.Entities.Band";
         public const string AliasedArtist = "Tuneage.Domain.Entities.AliasedArtist";
     }
+    public class ReleaseTypes
+    {
+        public const string SingleArtistRelease = "Tuneage.Domain.Entities.SingleArtistRelease";
+        public const string VariousArtistsRelease = "Tuneage.Domain.Entities.VariousArtistsRelease";
+    }
 }

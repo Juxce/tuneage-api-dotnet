@@ -155,6 +155,10 @@ namespace Tuneage.Data.Orm.EF.DataContexts
                 .HasForeignKey(avar => avar.VariousArtistsReleaseId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Label>().Ignore(l => l.Releases);
+            modelBuilder.Entity<Artist>().Ignore(a => a.SingleArtistReleases);
+            modelBuilder.Entity<Artist>().Ignore(a => a.ArtistVariousArtistsReleases);
+
 
 
             base.OnModelCreating(modelBuilder);

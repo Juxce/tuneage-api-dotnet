@@ -7,11 +7,13 @@ namespace Tuneage.Data.TestData
     {
         private readonly ILabelRepository _labelRepository;
         private readonly IArtistRepository _artistRepository;
+        private readonly IReleaseRepository _releaseRepository;
 
-        public DataSeeder(ILabelRepository labelRepository, IArtistRepository artistRepository)
+        public DataSeeder(ILabelRepository labelRepository, IArtistRepository artistRepository, IReleaseRepository releaseRepository)
         {
             _labelRepository = labelRepository;
             _artistRepository = artistRepository;
+            _releaseRepository = releaseRepository;
         }
 
         public async Task Seed(bool isIntegrationTest)
@@ -28,6 +30,12 @@ namespace Tuneage.Data.TestData
             {
                 if (removeIdsSoValuesCanBeGenerated) artist.ArtistId = 0;
                 await _artistRepository.Create(artist);
+            }
+
+            foreach (var release in TestDataGraph.Releases.ReleasesRaw)
+            {
+                if (removeIdsSoValuesCanBeGenerated) release.ReleaseId = 0;
+                await _releaseRepository.Create(release);
             }
         }
     }
