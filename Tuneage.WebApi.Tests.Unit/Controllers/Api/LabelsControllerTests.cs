@@ -23,9 +23,9 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
         {
             var mockLabelSet = new Mock<DbSet<Label>>();
 
-            _existingLabel = TestDataGraph.Labels.LabelExisting;
-            _existingLabelUpdated = TestDataGraph.Labels.LabelUpdated;
-            _newLabel = TestDataGraph.Labels.LabelNew;
+            _existingLabel = TestDataGraph.Labels.ExistingLabel;
+            _existingLabelUpdated = TestDataGraph.Labels.UpdatedLabel;
+            _newLabel = TestDataGraph.Labels.NewLabel;
             var labels = TestDataGraph.Labels.LabelsRaw;
             var data = labels.AsQueryable();
 
@@ -75,10 +75,10 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             // Arrange
 
             // Act
-            var result = await _controller.GetLabel(TestDataGraph.Labels.LabelIdNonExistent);
+            var result = await _controller.GetLabel(TestDataGraph.Labels.NonExistentLabelId);
 
             // Assert
-            _mockRepository.Verify(mr => mr.GetById(TestDataGraph.Labels.LabelIdNonExistent), Times.Once);
+            _mockRepository.Verify(mr => mr.GetById(TestDataGraph.Labels.NonExistentLabelId), Times.Once);
             Assert.IsType<ActionResult<Label>>(result);
             Assert.IsType<NotFoundResult>(result.Result);
             Assert.Null(result.Value);
@@ -105,7 +105,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             // Arrange
 
             // Act
-            var result = await _controller.PutLabel(TestDataGraph.Labels.LabelIdNonExistent, _existingLabelUpdated);
+            var result = await _controller.PutLabel(TestDataGraph.Labels.NonExistentLabelId, _existingLabelUpdated);
 
             // Assert
             Assert.IsType<BadRequestResult>(result);
@@ -149,10 +149,10 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             // Arrange
 
             // Act
-            var result = await _controller.DeleteLabel(TestDataGraph.Labels.LabelIdNonExistent);
+            var result = await _controller.DeleteLabel(TestDataGraph.Labels.NonExistentLabelId);
 
             // Assert
-            _mockRepository.Verify(mr => mr.GetById(TestDataGraph.Labels.LabelIdNonExistent), Times.Once);
+            _mockRepository.Verify(mr => mr.GetById(TestDataGraph.Labels.NonExistentLabelId), Times.Once);
             Assert.IsType<ActionResult<Label>>(result);
             Assert.IsType<NotFoundResult>(result.Result);
             Assert.Null(result.Value);

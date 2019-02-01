@@ -13,31 +13,33 @@ using Xunit;
 
 namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
 {
-    public class LabelsControllerTests : UnitTestFixture
+    public class ArtistsControllerTests : UnitTestFixture
     {
-        private readonly Mock<LabelRepository> _mockRepository;
-        private readonly LabelsController _controller;
-        private readonly Label _existingLabel, _existingLabelUpdated, _newLabel;
+        private readonly Mock<ArtistRepository> _mockRepository;
+        private readonly ArtistsController _controller;
+        private readonly Artist _existingArtist, _existingArtistUpdated, _newBand, _newSoloArtist, _newAlias;
         protected const string DefaultViewActionName = "Index";
 
-        public LabelsControllerTests()
+        public ArtistsControllerTests()
         {
-            var mockLabelSet = new Mock<DbSet<Label>>();
+            var mockArtistSet = new Mock<DbSet<Artist>>();
 
-            _existingLabel = TestDataGraph.Labels.ExistingLabel;
-            _existingLabelUpdated = TestDataGraph.Labels.UpdatedLabel;
-            _newLabel = TestDataGraph.Labels.NewLabel;
-            var labels = TestDataGraph.Labels.LabelsRaw;
-            var data = labels.AsQueryable();
+            _existingArtist = TestDataGraph.Artists.ExistingArtist;
+            _existingArtistUpdated = TestDataGraph.Artists.UpdatedArtist;
+            _newBand = TestDataGraph.Artists.NewBand;
+            _newSoloArtist = TestDataGraph.Artists.NewSoloArtist;
+            _newAlias = TestDataGraph.Artists.NewAliasedArtist;
+            var artists = TestDataGraph.Artists.ArtistsRaw;
+            var data = artists.AsQueryable();
 
-            SetupMockDbSet(mockLabelSet, data);
+            SetupMockDbSet(mockArtistSet, data);
 
-            SetupMockSetOnMockContext(mockLabelSet);
-            _mockRepository = new Mock<LabelRepository>(MockContext.Object);
-            _mockRepository.Setup(mr => mr.GetAllAlphabetical()).Returns(Task.FromResult(TestDataGraph.Labels.LabelsAlphabetizedByLabelName));
-            _mockRepository.Setup(mr => mr.GetById(_existingLabel.LabelId)).Returns(Task.FromResult(_existingLabel));
+            SetupMockSetOnMockContext(mockArtistSet);
+            _mockRepository = new Mock<ArtistRepository>(MockContext.Object);
+            _mockRepository.Setup(mr => mr.GetAllAlphabetical()).Returns(Task.FromResult(TestDataGraph.Artists.ArtistsAlphabetizedByArtistName));
+            _mockRepository.Setup(mr => mr.GetById(_existingArtist.ArtistId)).Returns(Task.FromResult(_existingArtist));
 
-            _controller = new LabelsController(_mockRepository.Object);
+            _controller = new ArtistsController(_mockRepository.Object);
         }
 
         [Fact]
@@ -48,13 +50,13 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             // Act
             var result = await _controller.Index();
             var viewResult = (ViewResult)result;
-            var model = (List<Label>)viewResult.Model;
+            var model = (List<Artist>)viewResult.Model;
 
             // Assert
             _mockRepository.Verify(mr => mr.GetAllAlphabetical(), Times.Once);
             Assert.IsType<ViewResult>(result);
             Assert.Null(viewResult.ViewName);
-            Assert.Equal(model, TestDataGraph.Labels.LabelsAlphabetizedByLabelName);
+            Assert.Equal(model, TestDataGraph.Artists.ArtistsAlphabetizedByArtistName);
         }
 
         [Fact]
@@ -63,19 +65,19 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             // Arrange
 
             // Act
-            var result = await _controller.Details(_existingLabel.LabelId);
+            var result = await _controller.Details(_existingArtist.ArtistId);
             var viewResult = (ViewResult)result;
-            var model = (Label)viewResult.Model;
+            var model = (Artist)viewResult.Model;
 
             // Assert
-            _mockRepository.Verify(mr => mr.GetById(_existingLabel.LabelId), Times.Once);
+            _mockRepository.Verify(mr => mr.GetById(_existingArtist.ArtistId), Times.Once);
             Assert.Null(viewResult.ViewName);
-            Assert.Equal(_existingLabel, model);
+            Assert.Equal(_existingArtist, model);
         }
 
         [Theory]
         [InlineData(null)]
-        [InlineData(TestDataGraph.Labels.NonExistentLabelId)]
+        [InlineData(TestDataGraph.Artists.NonExistentArtistId)]
         public async Task DetailsGet_ShouldReturnNotFoundResultWhenCalledWithBadData(int? value)
         {
             // Arrange
@@ -105,16 +107,46 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
         }
 
         [Fact]
-        public async Task CreatePost_ShouldCallRepositoryToToAddEntityAndRedirectToIndex()
+        public async Task CreatePost_WhenBand_ShouldCallRepositoryToToAddEntityAndRedirectToIndex()
         {
             // Arrange
 
             //Act
-            var result = await _controller.Create(_newLabel);
+            var result = await _controller.Create(_newBand);
             var redirectToActionResult = (RedirectToActionResult)result;
 
             //Assert
-            _mockRepository.Verify(mr => mr.Create(_newLabel), Times.Once);
+            _mockRepository.Verify(mr => mr.Create(It.IsAny<Band>()), Times.Once);
+            Assert.NotNull(redirectToActionResult);
+            Assert.Equal(DefaultViewActionName, redirectToActionResult.ActionName);
+        }
+
+        [Fact]
+        public async Task CreatePost_WhenSoloArtist_ShouldCallRepositoryToToAddEntityAndRedirectToIndex()
+        {
+            // Arrange
+
+            //Act
+            var result = await _controller.Create(_newSoloArtist);
+            var redirectToActionResult = (RedirectToActionResult)result;
+
+            //Assert
+            _mockRepository.Verify(mr => mr.Create(It.IsAny<SoloArtist>()), Times.Once);
+            Assert.NotNull(redirectToActionResult);
+            Assert.Equal(DefaultViewActionName, redirectToActionResult.ActionName);
+        }
+
+        [Fact]
+        public async Task CreatePost_WhenAlias_ShouldCallRepositoryToToAddEntityAndRedirectToIndex()
+        {
+            // Arrange
+
+            //Act
+            var result = await _controller.Create(_newAlias);
+            var redirectToActionResult = (RedirectToActionResult)result;
+
+            //Assert
+            _mockRepository.Verify(mr => mr.Create(It.IsAny<AliasedArtist>()), Times.Once);
             Assert.NotNull(redirectToActionResult);
             Assert.Equal(DefaultViewActionName, redirectToActionResult.ActionName);
         }
@@ -126,14 +158,14 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             _controller.ModelState.AddModelError("", "Error");
 
             // Act
-            var result = await _controller.Create(_newLabel);
+            var result = await _controller.Create(_newBand);
             var viewResult = (ViewResult)result;
-            var model = (Label)viewResult.Model;
+            var model = (Artist)viewResult.Model;
 
             // Assert
             Assert.Null(viewResult.ViewName);
             Assert.NotNull(viewResult.ViewData);
-            Assert.Equal(_newLabel, model);
+            Assert.Equal(_newBand, model);
         }
 
         [Fact]
@@ -142,20 +174,20 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             // Arrange
 
             // Act
-            var result = await _controller.Edit(_existingLabel.LabelId);
+            var result = await _controller.Edit(_existingArtist.ArtistId);
             var viewResult = (ViewResult)result;
-            var model = (Label)viewResult.Model;
+            var model = (Artist)viewResult.Model;
 
             // Assert
-            _mockRepository.Verify(mr => mr.GetById(_existingLabel.LabelId), Times.Once);
+            _mockRepository.Verify(mr => mr.GetById(_existingArtist.ArtistId), Times.Once);
             Assert.Null(viewResult.ViewName);
             Assert.NotNull(viewResult.ViewData);
-            Assert.Equal(_existingLabel, model);
+            Assert.Equal(_existingArtist, model);
         }
 
         [Theory]
         [InlineData(null)]
-        [InlineData(TestDataGraph.Labels.NonExistentLabelId)]
+        [InlineData(TestDataGraph.Artists.NonExistentArtistId)]
         public async Task EditGet_ShouldCallRepositoryToGetEntityAndReturnNotFoundResultWhenCalledWithBadData(int? value)
         {
             // Arrange
@@ -175,11 +207,11 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             // Arrange
 
             //Act
-            var result = await _controller.Edit(_existingLabelUpdated.LabelId, _existingLabelUpdated);
+            var result = await _controller.Edit(_existingArtistUpdated.ArtistId, _existingArtistUpdated);
             var redirectToActionResult = (RedirectToActionResult)result;
 
             //Assert
-            _mockRepository.Verify(mr => mr.Update(_existingLabelUpdated.LabelId, _existingLabelUpdated), Times.Once);
+            _mockRepository.Verify(mr => mr.Update(_existingArtistUpdated.ArtistId, _existingArtistUpdated), Times.Once);
             Assert.NotNull(redirectToActionResult);
             Assert.Equal(DefaultViewActionName, redirectToActionResult.ActionName);
         }
@@ -190,7 +222,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             // Arrange
 
             // Act
-            var result = await _controller.Edit(TestDataGraph.Labels.NonExistentLabelId, _existingLabelUpdated);
+            var result = await _controller.Edit(TestDataGraph.Artists.NonExistentArtistId, _existingArtistUpdated);
 
             // Assert
             Assert.IsType<NotFoundResult>(result);
@@ -204,14 +236,14 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             _controller.ModelState.AddModelError("", "Error");
 
             // Act
-            var result = await _controller.Edit(_existingLabelUpdated.LabelId, _existingLabelUpdated);
+            var result = await _controller.Edit(_existingArtistUpdated.ArtistId, _existingArtistUpdated);
             var viewResult = (ViewResult)result;
-            var model = (Label)viewResult.Model;
+            var model = (Artist)viewResult.Model;
 
             // Assert
             Assert.Null(viewResult.ViewName);
             Assert.NotNull(viewResult.ViewData);
-            Assert.Equal(_existingLabelUpdated, model);
+            Assert.Equal(_existingArtistUpdated, model);
         }
 
         [Fact]
@@ -220,20 +252,20 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             // Arrange
 
             // Act
-            var result = await _controller.Delete(_existingLabel.LabelId);
+            var result = await _controller.Delete(_existingArtist.ArtistId);
             var viewResult = (ViewResult)result;
-            var model = (Label)viewResult.Model;
+            var model = (Artist)viewResult.Model;
 
             // Assert
-            _mockRepository.Verify(mr => mr.GetById(_existingLabel.LabelId), Times.Once);
+            _mockRepository.Verify(mr => mr.GetById(_existingArtist.ArtistId), Times.Once);
             Assert.Null(viewResult.ViewName);
             Assert.NotNull(viewResult.ViewData);
-            Assert.Equal(_existingLabel, model);
+            Assert.Equal(_existingArtist, model);
         }
 
         [Theory]
         [InlineData(null)]
-        [InlineData(TestDataGraph.Labels.NonExistentLabelId)]
+        [InlineData(TestDataGraph.Artists.NonExistentArtistId)]
         public async Task DeleteGet_ShouldReturnNotFoundResultWhenCalledWithBadData(int? value)
         {
             // Arrange
@@ -253,12 +285,12 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             // Arrange
 
             // Act
-            var result = await _controller.DeleteConfirmed(_existingLabel.LabelId);
+            var result = await _controller.DeleteConfirmed(_existingArtist.ArtistId);
             var redirectToActionResult = (RedirectToActionResult)result;
 
             // Assert
-            _mockRepository.Verify(mr => mr.GetById(_existingLabel.LabelId), Times.Once);
-            _mockRepository.Verify(mr => mr.Delete(_existingLabel.LabelId), Times.Once);
+            _mockRepository.Verify(mr => mr.GetById(_existingArtist.ArtistId), Times.Once);
+            _mockRepository.Verify(mr => mr.Delete(_existingArtist.ArtistId), Times.Once);
             Assert.NotNull(redirectToActionResult);
             Assert.Equal(DefaultViewActionName, redirectToActionResult.ActionName);
         }

@@ -55,7 +55,7 @@ namespace Tuneage.WebApi.Controllers.Mvc
             {
                 if (!artist.IsPrinciple)
                     await _repository.Create(new AliasedArtist()
-                        { ArtistId = artist.ArtistId, Name = artist.Name, IsBand = artist.IsBand, PrincipleArtistId = artist.PrincipleArtistId}
+                        { ArtistId = artist.ArtistId, Name = artist.Name, IsBand = artist.IsBand, PrincipleArtistId = artist.PrincipleArtistId }
                     );
                 else
                 {
@@ -91,7 +91,7 @@ namespace Tuneage.WebApi.Controllers.Mvc
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ArtistId,Name,IsBand,IsPrinciple,PrinzEyedee")] Artist artist)
+        public async Task<IActionResult> Edit(int id, [Bind("ArtistId,Name,IsBand,IsPrinciple,PrincipleArtistId")] Artist artist)
         {
             if (id != artist.ArtistId)
             {

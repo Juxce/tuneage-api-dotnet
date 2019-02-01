@@ -33,7 +33,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
         {
             // Arrange
             await EnsureAntiforgeryTokenHeader();
-            var existingLabel = TestDataGraph.Labels.LabelExisting;
+            var existingLabel = TestDataGraph.Labels.ExistingLabel;
 
             // Act
             var response = await Client.GetAsync("/api/labels/" + existingLabel.LabelId);
@@ -52,7 +52,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
             await EnsureAntiforgeryTokenHeader();
 
             // Act
-            var response = await Client.GetAsync("/api/labels/" + TestDataGraph.Labels.LabelIdNonExistent);
+            var response = await Client.GetAsync("/api/labels/" + TestDataGraph.Labels.NonExistentLabelId);
             var responseString = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -66,7 +66,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
         {
             // Arrange
             await EnsureAntiforgeryTokenHeader();
-            var updatedLabel = TestDataGraph.Labels.LabelUpdated;
+            var updatedLabel = TestDataGraph.Labels.UpdatedLabel;
             var contents = new StringContent(JsonConvert.SerializeObject(updatedLabel), Encoding.UTF8, "application/json");
 
             // Act
@@ -84,11 +84,11 @@ namespace Tuneage.WebApi.Tests.Integration.Api
         {
             // Arrange
             await EnsureAntiforgeryTokenHeader();
-            var updatedLabel = TestDataGraph.Labels.LabelUpdated;
+            var updatedLabel = TestDataGraph.Labels.UpdatedLabel;
             var contents = new StringContent(JsonConvert.SerializeObject(updatedLabel), Encoding.UTF8, "application/json");
 
             // Act
-            var response = await Client.PutAsync("/api/labels/" + TestDataGraph.Labels.LabelIdNonExistent, contents);
+            var response = await Client.PutAsync("/api/labels/" + TestDataGraph.Labels.NonExistentLabelId, contents);
             var responseString = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -102,7 +102,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
         {
             // Arrange
             await EnsureAntiforgeryTokenHeader();
-            var newLabel = TestDataGraph.Labels.LabelNew;
+            var newLabel = TestDataGraph.Labels.NewLabel;
             newLabel.LabelId = TestDataGraph.Labels.LabelsRaw.Count + 1;
             var contents = new StringContent(JsonConvert.SerializeObject(newLabel), Encoding.UTF8, "application/json");
 
@@ -130,7 +130,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
         {
             // Arrange
             await EnsureAntiforgeryTokenHeader();
-            var existingLabel = TestDataGraph.Labels.LabelExisting;
+            var existingLabel = TestDataGraph.Labels.ExistingLabel;
 
             // Act
             var response = await Client.DeleteAsync("api/labels/" + existingLabel.LabelId);
@@ -149,7 +149,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
             await EnsureAntiforgeryTokenHeader();
 
             // Act
-            var response = await Client.DeleteAsync("api/labels/" + TestDataGraph.Labels.LabelIdNonExistent);
+            var response = await Client.DeleteAsync("api/labels/" + TestDataGraph.Labels.NonExistentLabelId);
             var responseString = await response.Content.ReadAsStringAsync();
 
             // Assert

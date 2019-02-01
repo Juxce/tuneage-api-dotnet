@@ -101,7 +101,7 @@ namespace Tuneage.WebApi.Controllers.Api
             }
 
             //_context.Labels.Remove(label); // Original scaffold call using context directly
-            await _repository.Delete(label.LabelId);
+            await _repository.Delete(id);
             //await _context.SaveChangesAsync(); // Original scaffold call using context directly
 
             return label;

@@ -22,9 +22,9 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
         {
             _mockLabelSet = new Mock<DbSet<Label>>();
 
-            _existingLabel = TestDataGraph.Labels.LabelExisting;
-            _existingLabelUpdated = TestDataGraph.Labels.LabelUpdated;
-            _newLabel = TestDataGraph.Labels.LabelNew;
+            _existingLabel = TestDataGraph.Labels.ExistingLabel;
+            _existingLabelUpdated = TestDataGraph.Labels.UpdatedLabel;
+            _newLabel = TestDataGraph.Labels.NewLabel;
             var labels = new List<Label> { _existingLabel };
             var data = labels.AsQueryable();
 
@@ -74,10 +74,10 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
             // Arrange
 
             // Act
-            var result = await _repository.GetById(TestDataGraph.Labels.LabelIdNonExistent);
+            var result = await _repository.GetById(TestDataGraph.Labels.NonExistentLabelId);
 
             // Assert
-            _mockLabelSet.Verify(mls => mls.FindAsync(TestDataGraph.Labels.LabelIdNonExistent), Times.Once);
+            _mockLabelSet.Verify(mls => mls.FindAsync(TestDataGraph.Labels.NonExistentLabelId), Times.Once);
             Assert.Null(result);
         }
 
@@ -162,7 +162,7 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
             // Arrange
 
             // Act
-            var result = _repository.Any(TestDataGraph.Labels.LabelIdNonExistent);
+            var result = _repository.Any(TestDataGraph.Labels.NonExistentLabelId);
 
             // Assert
             Assert.False(result);

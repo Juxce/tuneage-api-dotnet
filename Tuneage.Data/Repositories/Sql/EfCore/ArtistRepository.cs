@@ -38,7 +38,7 @@ namespace Tuneage.Data.Repositories.Sql.EfCore
                     break;
             }
 
-            await DbContext.Artists.AddAsync(entity);
+            await DbContext.Set<Artist>().AddAsync(entity);
             await SaveChangesAsync();
         }
     }

@@ -34,14 +34,14 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Arrange
 
             // Act
-            var response = await Client.GetAsync("/labels/details/" + TestDataGraph.Labels.LabelExisting.LabelId);
+            var response = await Client.GetAsync("/labels/details/" + TestDataGraph.Labels.ExistingLabel.LabelId);
             var responseString = await response.Content.ReadAsStringAsync();
 
             // Assert
             response.EnsureSuccessStatusCode();
             Assert.Contains("<title>Details - Tuneage.WebApi</title>", responseString);
-            Assert.Contains(TestDataGraph.Labels.LabelExisting.Name, responseString);
-            Assert.Contains(TestDataGraph.Labels.LabelExisting.WebsiteUrl, responseString);
+            Assert.Contains(TestDataGraph.Labels.ExistingLabel.Name, responseString);
+            Assert.Contains(TestDataGraph.Labels.ExistingLabel.WebsiteUrl, responseString);
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Arrange
 
             // Act
-            var response = await Client.GetAsync("/labels/details/" + TestDataGraph.Labels.LabelIdNonExistent);
+            var response = await Client.GetAsync("/labels/details/" + TestDataGraph.Labels.NonExistentLabelId);
             var responseString = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -82,8 +82,8 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
                 { "LabelId" , nextId.ToString() },
-                { "Name", TestDataGraph.Labels.LabelNew.Name },
-                { "WebsiteUrl", TestDataGraph.Labels.LabelNew.WebsiteUrl }
+                { "Name", TestDataGraph.Labels.NewLabel.Name },
+                { "WebsiteUrl", TestDataGraph.Labels.NewLabel.WebsiteUrl }
             });
 
             // Act
@@ -103,8 +103,8 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Assert
             response2.EnsureSuccessStatusCode();
             Assert.Contains("<title>Details - Tuneage.WebApi</title>", responseString2);
-            Assert.Contains(TestDataGraph.Labels.LabelNew.Name, responseString2);
-            Assert.Contains(TestDataGraph.Labels.LabelNew.WebsiteUrl, responseString2);
+            Assert.Contains(TestDataGraph.Labels.NewLabel.Name, responseString2);
+            Assert.Contains(TestDataGraph.Labels.NewLabel.WebsiteUrl, responseString2);
         }
 
         [Fact]
@@ -113,9 +113,9 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Arrange
             var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
-                { "LabelId" , TestDataGraph.Labels.LabelExisting.LabelId.ToString() },
-                { "Name", TestDataGraph.Labels.LabelExisting.Name },
-                { "WebsiteUrl", TestDataGraph.Labels.LabelExisting.WebsiteUrl }
+                { "LabelId" , TestDataGraph.Labels.ExistingLabel.LabelId.ToString() },
+                { "Name", TestDataGraph.Labels.ExistingLabel.Name },
+                { "WebsiteUrl", TestDataGraph.Labels.ExistingLabel.WebsiteUrl }
             });
 
             // Act
@@ -134,14 +134,14 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Arrange
 
             // Act
-            var response = await Client.GetAsync("/labels/edit/" + TestDataGraph.Labels.LabelExisting.LabelId);
+            var response = await Client.GetAsync("/labels/edit/" + TestDataGraph.Labels.ExistingLabel.LabelId);
             var responseString = await response.Content.ReadAsStringAsync();
 
             // Assert
             response.EnsureSuccessStatusCode();
             Assert.Contains("<title>Edit - Tuneage.WebApi</title>", responseString);
-            Assert.Contains(TestDataGraph.Labels.LabelExisting.Name, responseString);
-            Assert.Contains(TestDataGraph.Labels.LabelExisting.WebsiteUrl, responseString);
+            Assert.Contains(TestDataGraph.Labels.ExistingLabel.Name, responseString);
+            Assert.Contains(TestDataGraph.Labels.ExistingLabel.WebsiteUrl, responseString);
         }
 
         [Fact]
@@ -150,7 +150,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Arrange
 
             // Act
-            var response = await Client.GetAsync("/labels/edit/" + TestDataGraph.Labels.LabelIdNonExistent);
+            var response = await Client.GetAsync("/labels/edit/" + TestDataGraph.Labels.NonExistentLabelId);
             var responseString = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -165,9 +165,9 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Arrange
             var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
-                { "LabelId", TestDataGraph.Labels.LabelUpdated.LabelId.ToString() },
-                { "Name", TestDataGraph.Labels.LabelUpdated.Name },
-                { "WebsiteUrl", TestDataGraph.Labels.LabelUpdated.WebsiteUrl }
+                { "LabelId", TestDataGraph.Labels.UpdatedLabel.LabelId.ToString() },
+                { "Name", TestDataGraph.Labels.UpdatedLabel.Name },
+                { "WebsiteUrl", TestDataGraph.Labels.UpdatedLabel.WebsiteUrl }
             });
 
             // Act
@@ -187,9 +187,9 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Arrange
             var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
-                { "LabelId", TestDataGraph.Labels.LabelIdNonExistent.ToString() },
-                { "Name", TestDataGraph.Labels.LabelUpdated.Name },
-                { "WebsiteUrl", TestDataGraph.Labels.LabelUpdated.WebsiteUrl }
+                { "LabelId", TestDataGraph.Labels.NonExistentLabelId.ToString() },
+                { "Name", TestDataGraph.Labels.UpdatedLabel.Name },
+                { "WebsiteUrl", TestDataGraph.Labels.UpdatedLabel.WebsiteUrl }
             });
 
             // Act
@@ -208,13 +208,13 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Arrange
             var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
-                { "LabelId", TestDataGraph.Labels.LabelIdNonExistent.ToString() },
-                { "Name", TestDataGraph.Labels.LabelUpdated.Name },
-                { "WebsiteUrl", TestDataGraph.Labels.LabelUpdated.WebsiteUrl }
+                { "LabelId", TestDataGraph.Labels.NonExistentLabelId.ToString() },
+                { "Name", TestDataGraph.Labels.UpdatedLabel.Name },
+                { "WebsiteUrl", TestDataGraph.Labels.UpdatedLabel.WebsiteUrl }
             });
 
             // Act
-            var response = await Client.PostAsync("/labels/edit/" + TestDataGraph.Labels.LabelUpdated.LabelId, new FormUrlEncodedContent(formData));
+            var response = await Client.PostAsync("/labels/edit/" + TestDataGraph.Labels.UpdatedLabel.LabelId, new FormUrlEncodedContent(formData));
             var responseString = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -229,14 +229,14 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Arrange
 
             // Act
-            var response = await Client.GetAsync("/labels/delete/" + TestDataGraph.Labels.LabelExisting.LabelId);
+            var response = await Client.GetAsync("/labels/delete/" + TestDataGraph.Labels.ExistingLabel.LabelId);
             var responseString = await response.Content.ReadAsStringAsync();
 
             // Assert
             response.EnsureSuccessStatusCode();
             Assert.Contains("<title>Delete - Tuneage.WebApi</title>", responseString);
-            Assert.Contains(TestDataGraph.Labels.LabelExisting.Name, responseString);
-            Assert.Contains(TestDataGraph.Labels.LabelExisting.WebsiteUrl, responseString);
+            Assert.Contains(TestDataGraph.Labels.ExistingLabel.Name, responseString);
+            Assert.Contains(TestDataGraph.Labels.ExistingLabel.WebsiteUrl, responseString);
         }
 
         [Fact]
@@ -245,9 +245,9 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Arrange
             var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
-                { "LabelId", TestDataGraph.Labels.LabelExisting.LabelId.ToString() },
-                { "Name", TestDataGraph.Labels.LabelExisting.Name },
-                { "WebsiteUrl", TestDataGraph.Labels.LabelExisting.WebsiteUrl }
+                { "LabelId", TestDataGraph.Labels.ExistingLabel.LabelId.ToString() },
+                { "Name", TestDataGraph.Labels.ExistingLabel.Name },
+                { "WebsiteUrl", TestDataGraph.Labels.ExistingLabel.WebsiteUrl }
             });
 
             // Act
@@ -267,9 +267,9 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Arrange
             var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
             {
-                { "LabelId", TestDataGraph.Labels.LabelIdNonExistent.ToString() },
-                { "Name", TestDataGraph.Labels.LabelExisting.Name },
-                { "WebsiteUrl", TestDataGraph.Labels.LabelExisting.WebsiteUrl }
+                { "LabelId", TestDataGraph.Labels.NonExistentLabelId.ToString() },
+                { "Name", TestDataGraph.Labels.ExistingLabel.Name },
+                { "WebsiteUrl", TestDataGraph.Labels.ExistingLabel.WebsiteUrl }
             });
 
             // Act
