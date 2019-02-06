@@ -25,7 +25,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             var mockArtistSet = new Mock<DbSet<Artist>>();
 
             _existingArtist = TestDataGraph.Artists.ExistingArtist;
-            _existingArtistUpdated = TestDataGraph.Artists.UpdatedArtist;
+            _existingArtistUpdated = TestDataGraph.Artists.UpdatedBand;
             _newBand = TestDataGraph.Artists.NewBand;
             _newSoloArtist = TestDataGraph.Artists.NewSoloArtist;
             _newAlias = TestDataGraph.Artists.NewAliasedArtist;
@@ -38,6 +38,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             _mockRepository = new Mock<ArtistRepository>(MockContext.Object);
             _mockRepository.Setup(mr => mr.GetAllAlphabetical()).Returns(Task.FromResult(TestDataGraph.Artists.ArtistsAlphabetizedByArtistName));
             _mockRepository.Setup(mr => mr.GetById(_existingArtist.ArtistId)).Returns(Task.FromResult(_existingArtist));
+            _mockRepository.Setup(mr => mr.GetById(_existingArtistUpdated.ArtistId)).Returns(Task.FromResult(_existingArtistUpdated));
 
             _controller = new ArtistsController(_mockRepository.Object);
         }
@@ -211,7 +212,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             var redirectToActionResult = (RedirectToActionResult)result;
 
             //Assert
-            _mockRepository.Verify(mr => mr.Update(_existingArtistUpdated.ArtistId, _existingArtistUpdated), Times.Once);
+            _mockRepository.Verify(mr => mr.Update(_existingArtistUpdated.ArtistId, It.IsAny<Artist>()), Times.Once);
             Assert.NotNull(redirectToActionResult);
             Assert.Equal(DefaultViewActionName, redirectToActionResult.ActionName);
         }

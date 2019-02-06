@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Tuneage.Data.Constants;
 using Tuneage.Data.Repositories.Sql.EfCore;
 using Tuneage.Domain.Entities;
 
@@ -52,7 +54,47 @@ namespace Tuneage.WebApi.Controllers.Api
 
             try
             {
-                await _repository.SaveChangesAsync();
+                var existingArtist = await _repository.GetById(id);
+                if (existingArtist != null)
+                {
+                    switch (artist.GetType().ToString())
+                    {
+                        case ArtistTypes.SoloArtist:
+                            var updatedSoloArtist = new SoloArtist()
+                            {
+                                ArtistId = artist.ArtistId,
+                                Name = artist.Name,
+                                IsBand = artist.IsBand,
+                                IsPrinciple = artist.IsPrinciple
+                            };
+                            await _repository.Update(id, updatedSoloArtist);
+                            break;
+                        case ArtistTypes.Band:
+                            var updatedBand = new Band()
+                            {
+                                ArtistId = artist.ArtistId,
+                                Name = artist.Name,
+                                IsBand = artist.IsBand,
+                                IsPrinciple = artist.IsPrinciple
+                            };
+                            await _repository.Update(id, updatedBand);
+                            break;
+                        case ArtistTypes.AliasedArtist:
+                            var updatedAlias = new Band()
+                            {
+                                ArtistId = artist.ArtistId,
+                                Name = artist.Name,
+                                IsBand = artist.IsBand,
+                                IsPrinciple = artist.IsPrinciple
+                            };
+                            await _repository.Update(id, updatedAlias);
+                            break;
+                    }
+                }
+                else
+                {
+                    throw new Exception(ErrorMessages.ArtistIdForUpdateDoesNotExist);
+                }
             }
             catch (DbUpdateConcurrencyException)
             {

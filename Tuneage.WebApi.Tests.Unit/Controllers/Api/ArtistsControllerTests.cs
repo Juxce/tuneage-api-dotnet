@@ -24,7 +24,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             var mockArtistSet = new Mock<DbSet<Artist>>();
 
             _existingArtist = TestDataGraph.Artists.ExistingArtist;
-            _existingArtistUpdated = TestDataGraph.Artists.UpdatedArtist;
+            _existingArtistUpdated = TestDataGraph.Artists.UpdatedBand;
             _newBand = TestDataGraph.Artists.NewBand;
             _newSoloArtist = TestDataGraph.Artists.NewSoloArtist;
             _newAlias = TestDataGraph.Artists.NewAliasedArtist;
@@ -37,6 +37,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             _mockRepository = new Mock<ArtistRepository>(MockContext.Object);
             _mockRepository.Setup(mr => mr.GetAllAlphabetical()).Returns(Task.FromResult(TestDataGraph.Artists.ArtistsAlphabetizedByArtistName));
             _mockRepository.Setup(mr => mr.GetById(_existingArtist.ArtistId)).Returns(Task.FromResult(_existingArtist));
+            _mockRepository.Setup(mr => mr.GetById(_existingArtistUpdated.ArtistId)).Returns(Task.FromResult(_existingArtistUpdated));
 
             _controller = new ArtistsController(_mockRepository.Object);
         }
@@ -97,7 +98,6 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
 
             // Assert
             _mockRepository.Verify(mr => mr.SetModified(_existingArtistUpdated), Times.Once);
-            _mockRepository.Verify(mr => mr.SaveChangesAsync(), Times.Once);
             Assert.IsType<NoContentResult>(result);
         }
 

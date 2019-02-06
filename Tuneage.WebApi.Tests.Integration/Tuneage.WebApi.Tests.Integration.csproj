@@ -18,8 +18,4 @@
     <ProjectReference Include="..\Tuneage.WebApi\Tuneage.WebApi.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Api\" />
-  </ItemGroup>
-
 </Project>

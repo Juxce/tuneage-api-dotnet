@@ -47,7 +47,7 @@ namespace Tuneage.Data.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Title = table.Column<string>(nullable: true),
                     YearReleased = table.Column<int>(nullable: false),
-                    ReleasedOn = table.Column<DateTime>(nullable: false),
+                    ReleasedOn = table.Column<DateTime>(nullable: true),
                     LabelId = table.Column<int>(nullable: false),
                     IsByVariousArtists = table.Column<bool>(nullable: false),
                     ArtistId = table.Column<int>(nullable: true),
@@ -75,14 +75,15 @@ namespace Tuneage.Data.Migrations
                 columns: table => new
                 {
                     ArtistId = table.Column<int>(nullable: false),
-                    VariousArtistsReleaseId = table.Column<int>(nullable: false)
+                    VariousArtistsReleaseId = table.Column<int>(nullable: false),
+                    ArtistId1 = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ArtistVariousArtistsReleases", x => new { x.ArtistId, x.VariousArtistsReleaseId });
                     table.ForeignKey(
-                        name: "FK_ArtistVariousArtistsReleases_Artists_ArtistId",
-                        column: x => x.ArtistId,
+                        name: "FK_ArtistVariousArtistsReleases_Artists_ArtistId1",
+                        column: x => x.ArtistId1,
                         principalTable: "Artists",
                         principalColumn: "ArtistId",
                         onDelete: ReferentialAction.Restrict);
@@ -93,6 +94,11 @@ namespace Tuneage.Data.Migrations
                         principalColumn: "ReleaseId",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ArtistVariousArtistsReleases_ArtistId1",
+                table: "ArtistVariousArtistsReleases",
+                column: "ArtistId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ArtistVariousArtistsReleases_VariousArtistsReleaseId",

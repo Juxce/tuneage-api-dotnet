@@ -115,7 +115,11 @@ namespace Tuneage.Data.TestData
 
             public static readonly Artist NewAliasedArtist = new Artist { ArtistId = 46, Name = "Crustified Dibbs", IsBand = false, IsPrinciple = false, PrincipleArtistId = 8 };
 
-            public static readonly Artist UpdatedArtist = new Band { ArtistId = 18, Name = "Q-Tip UPDATED", IsBand = true, IsPrinciple = false };
+            public static readonly Artist UpdatedSoloArtist = new SoloArtist() { ArtistId = 18, Name = "Q-Tip UPDATED", IsBand = true, IsPrinciple = false };
+
+            public static readonly Artist UpdatedBand = new Band { ArtistId = 17, Name = "Company Flow UPDATED", IsBand = false, IsPrinciple = false };
+
+            public static readonly Artist UpdatedAlias = new AliasedArtist() { ArtistId = 26, Name = "Quasimoto UPDATED", IsBand = true, IsPrinciple = true, PrincipleArtistId = null };
 
             public const int NonExistentArtistId = 8675309;
         }
@@ -151,10 +155,10 @@ namespace Tuneage.Data.TestData
                 Release21
             };
 
-            public static readonly List<Release> ReleasesSortedAlphabeticallyByTitle = new List<Release>
+            public static readonly List<Release> ReleasesAlphabetizedByTitle = new List<Release>
             {
-                Release10, Release09, Release01, Release06, Release02, Release12, Release21, Release10, Release14, Release11,
-                Release13, Release04, Release06, Release05, Release19, Release16, Release03, Release07, Release15, Release02,
+                Release18, Release20, Release01, Release17, Release02, Release12, Release21, Release10, Release14, Release11,
+                Release13, Release04, Release06, Release05, Release19, Release16, Release03, Release07, Release15, Release09,
                 Release08
             };
 

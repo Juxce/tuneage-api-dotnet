@@ -52,7 +52,11 @@ namespace Tuneage.Data.Migrations
 
                     b.Property<int>("VariousArtistsReleaseId");
 
+                    b.Property<int?>("ArtistId1");
+
                     b.HasKey("ArtistId", "VariousArtistsReleaseId");
+
+                    b.HasIndex("ArtistId1");
 
                     b.HasIndex("VariousArtistsReleaseId");
 
@@ -89,7 +93,7 @@ namespace Tuneage.Data.Migrations
                     b.Property<string>("ReleaseType")
                         .IsRequired();
 
-                    b.Property<DateTime>("ReleasedOn");
+                    b.Property<DateTime?>("ReleasedOn");
 
                     b.Property<string>("Title");
 
@@ -138,15 +142,16 @@ namespace Tuneage.Data.Migrations
                 {
                     b.HasBaseType("Tuneage.Domain.Entities.Release");
 
+                    b.HasIndex("ArtistId");
+
                     b.HasDiscriminator().HasValue("VA");
                 });
 
             modelBuilder.Entity("Tuneage.Domain.Entities.ArtistVariousArtistsRelease", b =>
                 {
                     b.HasOne("Tuneage.Domain.Entities.Artist", "Artist")
-                        .WithMany("ArtistVariousArtistsReleases")
-                        .HasForeignKey("ArtistId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .WithMany()
+                        .HasForeignKey("ArtistId1");
 
                     b.HasOne("Tuneage.Domain.Entities.VariousArtistsRelease", "VariousArtistRelease")
                         .WithMany("ArtistVariousArtistsReleases")
@@ -157,7 +162,7 @@ namespace Tuneage.Data.Migrations
             modelBuilder.Entity("Tuneage.Domain.Entities.Release", b =>
                 {
                     b.HasOne("Tuneage.Domain.Entities.Label", "Label")
-                        .WithMany("Releases")
+                        .WithMany()
                         .HasForeignKey("LabelId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -165,7 +170,14 @@ namespace Tuneage.Data.Migrations
             modelBuilder.Entity("Tuneage.Domain.Entities.SingleArtistRelease", b =>
                 {
                     b.HasOne("Tuneage.Domain.Entities.Artist", "Artist")
-                        .WithMany("SingleArtistReleases")
+                        .WithMany()
+                        .HasForeignKey("ArtistId");
+                });
+
+            modelBuilder.Entity("Tuneage.Domain.Entities.VariousArtistsRelease", b =>
+                {
+                    b.HasOne("Tuneage.Domain.Entities.Artist", "Artist")
+                        .WithMany()
                         .HasForeignKey("ArtistId");
                 });
 #pragma warning restore 612, 618

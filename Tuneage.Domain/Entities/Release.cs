@@ -22,7 +22,7 @@ namespace Tuneage.Domain.Entities
             set;
         }
 
-        public virtual DateTime ReleasedOn
+        public virtual DateTime? ReleasedOn
         {
             get;
             set;
@@ -65,6 +65,12 @@ namespace Tuneage.Domain.Entities
         //}
 
         public virtual Label Label
+        {
+            get;
+            set;
+        }
+
+        public virtual Artist Artist
         {
             get;
             set;

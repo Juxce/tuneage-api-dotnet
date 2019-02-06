@@ -36,9 +36,9 @@ namespace Tuneage.Data.Repositories.Sql.EfCore
                     entity.IsBand = true;
                     entity.IsPrinciple = true;
                     break;
-                //case ArtistTypes.AliasedArtist:
-                //    entity.IsPrinciple = false;
-                //    break;
+                case ArtistTypes.AliasedArtist:
+                    entity.IsPrinciple = false;
+                    break;
             }
 
             await DbContext.Set<Artist>().AddAsync(entity);
