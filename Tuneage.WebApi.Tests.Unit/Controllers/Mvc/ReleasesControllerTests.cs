@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             var mockReleaseSet = new Mock<DbSet<Release>>();
 
             _existingRelease = TestDataGraph.Releases.ExistingRelease;
-            _existingReleaseUpdated = TestDataGraph.Releases.UpdatedRelease;
+            _existingReleaseUpdated = TestDataGraph.Releases.UpdatedSingleArtistRelease;
             _newSingleArtistRelease = TestDataGraph.Releases.NewSingleArtistRelease;
             _newVariousArtistsRelease = TestDataGraph.Releases.NewVariousArtistsRelease;
             var labelsData = TestDataGraph.Labels.LabelsRaw.AsQueryable();
@@ -52,6 +53,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             _mockReleaseRepository = new Mock<ReleaseRepository>(MockContext.Object);
             _mockReleaseRepository.Setup(mrr => mrr.GetAllAlphabetical()).Returns(Task.FromResult(TestDataGraph.Releases.ReleasesAlphabetizedByTitle));
             _mockReleaseRepository.Setup(mrr => mrr.GetById(_existingRelease.ReleaseId)).Returns(Task.FromResult(_existingRelease));
+            _mockReleaseRepository.Setup(mrr => mrr.GetById(_existingReleaseUpdated.ReleaseId)).Returns(Task.FromResult(_existingRelease));
 
             _controller = new ReleasesController(mockLabelRepository.Object, mockArtistRepository.Object, _mockReleaseRepository.Object);
         }

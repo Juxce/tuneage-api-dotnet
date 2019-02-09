@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -120,8 +121,33 @@ namespace Tuneage.WebApi.Controllers.Mvc
             {
                 try
                 {
-                    if (release.IsByVariousArtists)
-                        release.ArtistId = null;
+                    //var existingRelease = await _releaseRepository.GetById(id);
+                    //if (existingRelease != null)
+                    //{
+                    //    switch (existingRelease.GetType().ToString())
+                    //    {
+                    //        case ReleaseTypes.SingleArtistRelease:
+                    //            var updatedSingleArtistRelease = new SingleArtistRelease
+                    //            {
+                    //                ReleaseId = release.ReleaseId, LabelId = release.LabelId, Title = release.Title,
+                    //                YearReleased = release.YearReleased, ArtistId = release.ArtistId
+                    //            };
+                    //            await _releaseRepository.Update(id, updatedSingleArtistRelease);
+                    //            break;
+                    //        case ReleaseTypes.VariousArtistsRelease:
+                    //            var updatedVariousArtistsRelease = new VariousArtistsRelease
+                    //            {
+                    //                ReleaseId = release.ReleaseId, LabelId = release.LabelId, Title = release.Title,
+                    //                YearReleased = release.YearReleased
+                    //            };
+                    //            await _releaseRepository.Update(id, updatedVariousArtistsRelease);
+                    //            break;
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    throw new Exception(ErrorMessages.ReleaseIdForUpdateDoesNotExist);
+                    //}
 
                     await _releaseRepository.Update(id, release);
                 }

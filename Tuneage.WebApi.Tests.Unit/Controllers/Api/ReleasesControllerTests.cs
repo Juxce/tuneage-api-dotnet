@@ -24,7 +24,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             var mockReleaseSet = new Mock<DbSet<Release>>();
 
             _existingRelease = TestDataGraph.Releases.ExistingRelease;
-            _existingReleaseUpdated = TestDataGraph.Releases.UpdatedRelease;
+            _existingReleaseUpdated = TestDataGraph.Releases.UpdatedSingleArtistRelease;
             _newSingleArtistRelease = TestDataGraph.Releases.NewSingleArtistRelease;
             _newVariousArtistsRelease = TestDataGraph.Releases.NewVariousArtistsRelease;
             var releasesData = TestDataGraph.Releases.ReleasesRaw.AsQueryable();

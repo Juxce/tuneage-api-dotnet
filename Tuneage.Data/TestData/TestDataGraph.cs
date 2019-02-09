@@ -170,8 +170,11 @@ namespace Tuneage.Data.TestData
             public static readonly Release NewVariousArtistsRelease =
                 new Release { ReleaseId = 23, LabelId = 5, Title = "Life In The Fat Lane", YearReleased = 2000, IsByVariousArtists = true };
 
-            public static readonly Release UpdatedRelease = 
-                new Release { ReleaseId = 9, LabelId = 5, Title = "The Yes Album UPDATED", YearReleased = 1777, IsByVariousArtists = false, ArtistId = 20 };
+            public static readonly SingleArtistRelease UpdatedSingleArtistRelease = 
+                new SingleArtistRelease { ReleaseId = 9, LabelId = 5, Title = "The Yes Album UPDATED", YearReleased = 1777, ArtistId = 20 };
+
+            public static readonly VariousArtistsRelease UpdatedVariousArtistsRelease =
+                new VariousArtistsRelease { ReleaseId = 4, LabelId = 13, Title = "Soundbombing II UPDATED", YearReleased = 1777 };
 
             public const int NonExistentReleaseId = 666;
         }

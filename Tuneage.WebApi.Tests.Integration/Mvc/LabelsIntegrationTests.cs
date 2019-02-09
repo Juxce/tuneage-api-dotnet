@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Tuneage.Data.Constants;
 using Tuneage.Data.TestData;
 using Xunit;
 
@@ -20,7 +21,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
 
             // Assert
             response.EnsureSuccessStatusCode();
-            Assert.Contains("<title>Index - Tuneage.WebApi</title>", responseString);
+            Assert.Contains(ViewData.DefaultIndexPageTitle, responseString);
             foreach (var label in TestDataGraph.Labels.LabelsRaw)
             {
                 Assert.Contains(label.Name, responseString);
@@ -71,7 +72,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Assert
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Contains("<title>Create - Tuneage.WebApi</title>", responseString);
+            Assert.Contains(ViewData.DefaultCreatePageTitle, responseString);
         }
         
         [Fact]
@@ -259,6 +260,14 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             Assert.Equal(HttpStatusCode.Found, response.StatusCode);
             Assert.Equal("/labels", response.Headers.Location.ToString());
             Assert.Equal(string.Empty, responseString);
+
+            // Act
+            var response2 = await Client.GetAsync("/labels");
+            var responseString2 = await response2.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.True(response2.IsSuccessStatusCode);
+            Assert.DoesNotContain(TestDataGraph.Labels.ExistingLabel.Name, responseString2);
         }
 
         [Fact]
@@ -279,7 +288,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Assert
             Assert.False(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-            Assert.Contains("ArgumentNullException: Value cannot be null.", responseString);
+            Assert.Contains(ErrorMessages.ArgumentNullException, responseString);
         }
     }
 }
