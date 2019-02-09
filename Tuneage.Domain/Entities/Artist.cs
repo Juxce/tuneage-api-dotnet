@@ -26,7 +26,7 @@
             set;
         }
 
-        public virtual int? PrincipleArtistId
+        public virtual int? PrincipalArtistId
         {
             get;
             set;

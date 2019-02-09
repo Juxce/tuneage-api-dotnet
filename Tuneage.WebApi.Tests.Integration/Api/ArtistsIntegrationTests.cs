@@ -17,7 +17,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
         {
             // Arrange
             var rawSerializedAlphaArtists = JsonConvert.SerializeObject(TestDataGraph.Artists.ArtistsAlphabetizedByArtistName);
-            var expectedSerializedArtists = rawSerializedAlphaArtists.Replace("\"PrincipleArtist\":null,", string.Empty);
+            var expectedSerializedArtists = rawSerializedAlphaArtists.Replace("\"PrincipalArtist\":null,", string.Empty);
             await EnsureAntiforgeryTokenHeader();
 
             // Act

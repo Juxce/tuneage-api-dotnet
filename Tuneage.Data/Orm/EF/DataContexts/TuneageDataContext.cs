@@ -31,7 +31,7 @@ namespace Tuneage.Data.Orm.EF.DataContexts
         //public virtual DbSet<ConceptualArtist> ConceptualArtists { get; set; }  // Excluded: Not needed by domain
         public virtual DbSet<Band> Bands { get; set; }
         public virtual DbSet<SoloArtist> SoloArtists { get; set; }
-        //public virtual DbSet<PrincipleArtist> PrincipleArtists { get; set; }  // Excluded: Not needed by domain
+        //public virtual DbSet<PrincipalArtist> PrincipalArtists { get; set; }  // Excluded: Not needed by domain
         public virtual DbSet<AliasedArtist> AliasedArtists { get; set; }
         //public virtual DbSet<Lineup> Lineups { get; set; }
         //public virtual DbSet<Cred> Creds { get; set; }
@@ -101,7 +101,7 @@ namespace Tuneage.Data.Orm.EF.DataContexts
             ////    .Map<Band>(m => m.Requires("PopulismArtistTypeId").HasValue("BAND"));
             ////modelBuilder.Entity<ConceptualArtist>()
             ////    .Map<AliasedArtist>(m => m.Requires("ConceptualArtistTypeId").HasValue("ALIAS").IsOptional())
-            ////    .Map<PrincipleArtist>(m => m.Requires("ConceptualArtistTypeId").HasValue("PRINCIPLE"));
+            ////    .Map<PrincipalArtist>(m => m.Requires("ConceptualArtistTypeId").HasValue("PRINCIPLE"));
 
             ////modelBuilder.Entity<Cred>()
             ////    .Map<CoveredByCred>(m => m.Requires("PrimaryCredTypeId").HasValue("COVEREDBY").IsOptional())
@@ -137,7 +137,7 @@ namespace Tuneage.Data.Orm.EF.DataContexts
 
             modelBuilder.Entity<AliasedArtist>().Property(aa => aa.IsBand).IsRequired();
             modelBuilder.Entity<AliasedArtist>().Property(aa => aa.IsPrinciple).HasDefaultValue(false);
-            modelBuilder.Entity<AliasedArtist>().Ignore(aa => aa.PrincipleArtist);
+            modelBuilder.Entity<AliasedArtist>().Ignore(aa => aa.PrincipalArtist);
 
             // Many-to-many join entity ArtistVariousArtistsRelease setup (Artist and VariousArtistRelease)
             // NOTE: The ArtistVariousArtistsRelease object should go away once Tracks/Recordings/Songs are

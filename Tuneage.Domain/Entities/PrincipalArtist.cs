@@ -1,6 +1,6 @@
 ﻿namespace Tuneage.Domain.Entities
 {
-    public class PrincipleArtist : ConceptualArtist
+    public class PrincipalArtist : ConceptualArtist
     {
         public virtual AliasedArtist[] AliasedArtists
         {

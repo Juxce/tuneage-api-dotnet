@@ -251,7 +251,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
         //        { "Name", TestDataGraph.Artists.UpdatedAlias.Name },
         //        { "IsBand", TestDataGraph.Artists.UpdatedAlias.IsBand.ToString() },
         //        { "IsPrinciple", TestDataGraph.Artists.UpdatedAlias.IsPrinciple.ToString() },
-        //        { "PrincipleArtistId", TestDataGraph.Artists.UpdatedAlias.PrincipleArtistId.ToString() }
+        //        { "PrincipalArtistId", TestDataGraph.Artists.UpdatedAlias.PrincipalArtistId.ToString() }
         //    });
 
         //    // Act

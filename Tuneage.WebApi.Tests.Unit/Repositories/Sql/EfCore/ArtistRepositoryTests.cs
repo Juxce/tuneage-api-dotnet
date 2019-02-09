@@ -80,7 +80,7 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
         public async void Create_WhenAlias_ShouldCallContextToAddAndSave()
         {
             // Arrange
-            var newAliasedArtist = new AliasedArtist() { ArtistId = _newSoloArtist.ArtistId, Name = _newSoloArtist.Name, PrincipleArtistId = _newAlias.PrincipleArtistId };
+            var newAliasedArtist = new AliasedArtist() { ArtistId = _newSoloArtist.ArtistId, Name = _newSoloArtist.Name, PrincipalArtistId = _newAlias.PrincipalArtistId };
 
             // Act
             await _repository.Create(newAliasedArtist);

@@ -117,7 +117,7 @@ namespace Tuneage.WebApi.Controllers.Api
         {
             if (!artist.IsPrinciple)
                 await _repository.Create(new AliasedArtist()
-                    { ArtistId = artist.ArtistId, Name = artist.Name, IsBand = artist.IsBand, PrincipleArtistId = artist.PrincipleArtistId }
+                    { ArtistId = artist.ArtistId, Name = artist.Name, IsBand = artist.IsBand, PrincipalArtistId = artist.PrincipalArtistId }
                 );
             else
             {

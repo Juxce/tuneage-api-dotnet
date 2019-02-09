@@ -2,7 +2,7 @@
 {
     public class AliasedArtist : ConceptualArtist
     {
-        public virtual PrincipleArtist PrincipleArtist
+        public virtual PrincipalArtist PrincipalArtist
         {
             get;
             set;

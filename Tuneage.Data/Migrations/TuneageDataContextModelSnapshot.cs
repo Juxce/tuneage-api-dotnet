@@ -37,7 +37,7 @@ namespace Tuneage.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<int?>("PrincipleArtistId");
+                    b.Property<int?>("PrincipalArtistId");
 
                     b.HasKey("ArtistId");
 

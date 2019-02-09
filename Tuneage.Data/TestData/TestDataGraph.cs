@@ -70,7 +70,7 @@ namespace Tuneage.Data.TestData
             public static readonly SoloArtist    Artist23 = new SoloArtist    { ArtistId = 23, Name = "Talib Kweli" };
             public static readonly Band          Artist24 = new Band          { ArtistId = 24, Name = "Black Star" };
             public static readonly SoloArtist    Artist25 = new SoloArtist    { ArtistId = 25, Name = "Madlib" };
-            public static readonly AliasedArtist Artist26 = new AliasedArtist { ArtistId = 26, Name = "Quasimoto", PrincipleArtistId = 25, IsBand = false };
+            public static readonly AliasedArtist Artist26 = new AliasedArtist { ArtistId = 26, Name = "Quasimoto", PrincipalArtistId = 25, IsBand = false };
             public static readonly SoloArtist    Artist27 = new SoloArtist    { ArtistId = 27, Name = "King T" };
             public static readonly Band          Artist28 = new Band          { ArtistId = 28, Name = "The Beach Boys" };
             public static readonly SoloArtist    Artist29 = new SoloArtist    { ArtistId = 29, Name = "Homeboy Sandman" };
@@ -87,7 +87,7 @@ namespace Tuneage.Data.TestData
             public static readonly Band          Artist40 = new Band          { ArtistId = 40, Name = "De La Soul" };
             public static readonly Band          Artist41 = new Band          { ArtistId = 41, Name = "Operation Ivy" };
             public static readonly Band          Artist42 = new Band          { ArtistId = 42, Name = "Green Day" };
-            public static readonly AliasedArtist Artist43 = new AliasedArtist { ArtistId = 43, Name = "Foxboro Hottubs", PrincipleArtistId = 42, IsBand = true };
+            public static readonly AliasedArtist Artist43 = new AliasedArtist { ArtistId = 43, Name = "Foxboro Hottubs", PrincipalArtistId = 42, IsBand = true };
 
             public static readonly List<Artist> ArtistsRaw = new List<Artist>
             {
@@ -113,13 +113,13 @@ namespace Tuneage.Data.TestData
 
             public static readonly Artist NewSoloArtist = new Artist { ArtistId = 45, Name = "Frank Zappa", IsBand = false, IsPrinciple = true };
 
-            public static readonly Artist NewAliasedArtist = new Artist { ArtistId = 46, Name = "Crustified Dibbs", IsBand = false, IsPrinciple = false, PrincipleArtistId = 8 };
+            public static readonly Artist NewAliasedArtist = new Artist { ArtistId = 46, Name = "Crustified Dibbs", IsBand = false, IsPrinciple = false, PrincipalArtistId = 8 };
 
             public static readonly Artist UpdatedSoloArtist = new SoloArtist() { ArtistId = 18, Name = "Q-Tip UPDATED", IsBand = true, IsPrinciple = false };
 
             public static readonly Artist UpdatedBand = new Band { ArtistId = 17, Name = "Company Flow UPDATED", IsBand = false, IsPrinciple = false };
 
-            public static readonly Artist UpdatedAlias = new AliasedArtist() { ArtistId = 26, Name = "Quasimoto UPDATED", IsBand = true, IsPrinciple = true, PrincipleArtistId = null };
+            public static readonly Artist UpdatedAlias = new AliasedArtist() { ArtistId = 26, Name = "Quasimoto UPDATED", IsBand = true, IsPrinciple = true, PrincipalArtistId = null };
 
             public const int NonExistentArtistId = 8675309;
         }
