@@ -39,4 +39,17 @@ namespace Tuneage.Data.Constants
         public const string DefaultCreatePageTitle = "<title>Create - Tuneage.WebApi</title>";
         public const string DefaultDeletePageTitle = "<title>Delete - Tuneage.WebApi</title>";
     }
+
+    public class Explainations
+    {
+        public const string DbConcurrencyExceptionFromInMemoryDb =
+            @"This test yields an internal server error ""DbConcurrencyException: Attempted to update or delete an entity that does not exist
+            in the store."" but it is unclear why. It can be verified through debugging that the parent entity, along with all related entities,
+            indeed do exist in the db, and on the data context. This error only happens when editing types that are built from subtypes, like
+            Arist (constructed via SoloArtist, Band, or AliasedArtist) and Release (constructed via SingleArtistRelease or VariousArtistsRelease).
+            The collection is of the parent type, but shows subtypes inside at runtime, as expected, but it doesn't seem like the in-memory
+            database acts like the actual MSSQL database does in these instances at runtime. These types of edits work fine when manually testing
+            both API and MVC endpoints for these cases, but fail when done in integration tests using the in-memory database. The error happens
+            for both API tests that use HttpClient.PutAsync() as well as MVC tests that use HttpClient.PostAsync(). Shrug.";
+    }
 }

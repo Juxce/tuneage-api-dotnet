@@ -104,48 +104,6 @@ namespace Tuneage.WebApi.Controllers.Mvc
             {
                 try
                 {
-                    //var existingArtist = await _repository.GetById(id);
-                    //if (existingArtist != null)
-                    //{
-                    //    switch (existingArtist.GetType().ToString())
-                    //    {
-                    //        case ArtistTypes.SoloArtist:
-                    //            var updatedSoloArtist = new SoloArtist()
-                    //            {
-                    //                ArtistId = artist.ArtistId,
-                    //                Name = artist.Name,
-                    //                IsBand = artist.IsBand,
-                    //                IsPrinciple = artist.IsPrinciple
-                    //            };
-                    //            await _repository.Update(id, updatedSoloArtist);
-                    //            break;
-                    //        case ArtistTypes.Band:
-                    //            var updatedBand = new Band()
-                    //            {
-                    //                ArtistId = artist.ArtistId,
-                    //                Name = artist.Name,
-                    //                IsBand = artist.IsBand,
-                    //                IsPrinciple = artist.IsPrinciple
-                    //            };
-                    //            await _repository.Update(id, updatedBand);
-                    //            break;
-                    //        case ArtistTypes.AliasedArtist:
-                    //            var updatedAlias = new Band()
-                    //            {
-                    //                ArtistId = artist.ArtistId,
-                    //                Name = artist.Name,
-                    //                IsBand = artist.IsBand,
-                    //                IsPrinciple = artist.IsPrinciple
-                    //            };
-                    //            await _repository.Update(id, updatedAlias);
-                    //            break;
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    throw new Exception(ErrorMessages.ArtistIdForUpdateDoesNotExist);
-                    //}
-
                     await _repository.Update(id, artist);
                 }
                 catch (DbUpdateConcurrencyException)

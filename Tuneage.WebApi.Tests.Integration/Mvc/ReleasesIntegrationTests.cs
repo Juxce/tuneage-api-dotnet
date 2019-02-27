@@ -197,10 +197,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             Assert.Equal(string.Empty, responseString);
         }
 
-        [Fact(Skip = "This test yields an internal server error \"Attempted to update or delete an entity that does not exist in the store.\" but why? " +
-                     "Setting breakpoint in repo shows that the entity does exist on the data context. This only happens for types with subtypes." +
-                     "The collection is parent type but shows subtypes inside. Is a conversion needed to get around this? Shouldn't be, since" +
-                     "this works just fine when running the app and manually integration testing. SO, W.T.Fuck?")]
+        [Fact(Skip = Explainations.DbConcurrencyExceptionFromInMemoryDb)]
         public async Task EditPost_WhenReleaseWasOriginallySingleArtist_ShouldReturnFoundStatusAndRedirectionLocationToAll()
         {
             // Arrange
@@ -223,6 +220,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             Assert.Equal("/releases", response.Headers.Location.ToString());
             Assert.Equal(string.Empty, responseString);
         }
+        #region "Commented tests with same approach for additional subtypes"
 
         //[Fact]
         //public async Task EditPost_WhenReleaseWasOriginallyVariousArtists_ShouldReturnFoundStatusAndRedirectionLocationToAll()
@@ -246,6 +244,8 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
         //    Assert.Equal("/artists", response.Headers.Location.ToString());
         //    Assert.Equal(string.Empty, responseString);
         //}
+
+        #endregion "Commented tests with same approach for additional subtypes"
 
         [Fact]
         public async Task EditPost_ShouldReturnErrorWhenCalledWithBadId()

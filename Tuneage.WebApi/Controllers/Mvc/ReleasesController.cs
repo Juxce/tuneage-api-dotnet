@@ -121,34 +121,6 @@ namespace Tuneage.WebApi.Controllers.Mvc
             {
                 try
                 {
-                    //var existingRelease = await _releaseRepository.GetById(id);
-                    //if (existingRelease != null)
-                    //{
-                    //    switch (existingRelease.GetType().ToString())
-                    //    {
-                    //        case ReleaseTypes.SingleArtistRelease:
-                    //            var updatedSingleArtistRelease = new SingleArtistRelease
-                    //            {
-                    //                ReleaseId = release.ReleaseId, LabelId = release.LabelId, Title = release.Title,
-                    //                YearReleased = release.YearReleased, ArtistId = release.ArtistId
-                    //            };
-                    //            await _releaseRepository.Update(id, updatedSingleArtistRelease);
-                    //            break;
-                    //        case ReleaseTypes.VariousArtistsRelease:
-                    //            var updatedVariousArtistsRelease = new VariousArtistsRelease
-                    //            {
-                    //                ReleaseId = release.ReleaseId, LabelId = release.LabelId, Title = release.Title,
-                    //                YearReleased = release.YearReleased
-                    //            };
-                    //            await _releaseRepository.Update(id, updatedVariousArtistsRelease);
-                    //            break;
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    throw new Exception(ErrorMessages.ReleaseIdForUpdateDoesNotExist);
-                    //}
-
                     await _releaseRepository.Update(id, release);
                 }
                 catch (DbUpdateConcurrencyException)
