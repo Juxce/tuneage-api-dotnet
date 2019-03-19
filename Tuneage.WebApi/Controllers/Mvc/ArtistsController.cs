@@ -86,9 +86,9 @@ namespace Tuneage.WebApi.Controllers.Mvc
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ArtistId,Name,IsBand,IsPrinciple,PrincipalArtistId")] Artist artist)
+        public async Task<IActionResult> Edit(int id, [Bind("ArtistId,Name,IsBand,IsPrinciple,PrincipalArtistId")] Artist modifiedArtist)
         {
-            if (id != artist.ArtistId)
+            if (id != modifiedArtist.ArtistId)
             {
                 return NotFound();
             }
@@ -97,11 +97,32 @@ namespace Tuneage.WebApi.Controllers.Mvc
             {
                 try
                 {
-                    await _repository.Update(id, artist);
+                    var preExistingArtist = await _repository.GetById(id);
+                    if (preExistingArtist != null)
+                    {
+                        switch (preExistingArtist.GetType().ToString())
+                        {
+                            case ArtistTypes.SoloArtist:
+                                _repository.SetModified(_service.TransformSoloArtistForUpdate((SoloArtist)preExistingArtist, modifiedArtist));
+                                break;
+                            case ArtistTypes.Band:
+                                _repository.SetModified(_service.TransformBandForUpdate((Band)preExistingArtist, modifiedArtist));
+                                break;
+                            case ArtistTypes.AliasedArtist:
+                                _repository.SetModified(_service.TransformAliasForUpdate((AliasedArtist)preExistingArtist, modifiedArtist));
+                                break;
+                        }
+
+                        await _repository.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        throw new Exception(ErrorMessages.ArtistIdForUpdateDoesNotExist);
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ArtistExists(artist.ArtistId))
+                    if (!ArtistExists(modifiedArtist.ArtistId))
                     {
                         return NotFound();
                     }
@@ -112,7 +133,7 @@ namespace Tuneage.WebApi.Controllers.Mvc
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(artist);
+            return View(modifiedArtist);
         }
 
         // GET: Artists/Delete/5

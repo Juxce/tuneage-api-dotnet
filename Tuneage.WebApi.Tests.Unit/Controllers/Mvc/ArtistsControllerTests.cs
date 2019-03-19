@@ -220,7 +220,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             var redirectToActionResult = (RedirectToActionResult)result;
 
             //Assert
-            _mockRepository.Verify(mr => mr.Update(_existingArtistUpdated.ArtistId, It.IsAny<Artist>()), Times.Once);
+            _mockRepository.Verify(mr => mr.SetModified(It.IsAny<Artist>()), Times.Once);
             Assert.NotNull(redirectToActionResult);
             Assert.Equal(DefaultViewActionName, redirectToActionResult.ActionName);
         }

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Tuneage.Data.Constants;
 using Tuneage.Data.TestData;
 using Tuneage.Domain.Entities;
 using Xunit;

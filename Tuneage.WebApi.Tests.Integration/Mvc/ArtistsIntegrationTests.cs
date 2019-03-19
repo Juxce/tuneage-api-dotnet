@@ -192,7 +192,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             Assert.Equal(string.Empty, responseString);
         }
 
-        [Fact(Skip = Explainations.DbConcurrencyExceptionFromInMemoryDb)]
+        [Fact]
         public async Task EditPost_WhenArtistWasOriginallySolo_ShouldReturnFoundStatusAndRedirectionLocationToAll()
         {
             // Arrange
@@ -214,56 +214,53 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             Assert.Equal("/artists", response.Headers.Location.ToString());
             Assert.Equal(string.Empty, responseString);
         }
-        #region "Commented tests with same approach for additional subtypes"
 
-        //[Fact]
-        //public async Task EditPost_WhenArtistWasOriginallyBand_ShouldReturnFoundStatusAndRedirectionLocationToAll()
-        //{
-        //    // Arrange
-        //    var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
-        //    {
-        //        { "ArtistId", TestDataGraph.Artists.UpdatedBand.ArtistId.ToString() },
-        //        { "Name", TestDataGraph.Artists.UpdatedBand.Name },
-        //        { "IsBand", TestDataGraph.Artists.UpdatedBand.IsBand.ToString() },
-        //        { "IsPrinciple", TestDataGraph.Artists.UpdatedBand.IsPrinciple.ToString() }
-        //    });
+        [Fact]
+        public async Task EditPost_WhenArtistWasOriginallyBand_ShouldReturnFoundStatusAndRedirectionLocationToAll()
+        {
+            // Arrange
+            var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
+            {
+                { "ArtistId", TestDataGraph.Artists.UpdatedBand.ArtistId.ToString() },
+                { "Name", TestDataGraph.Artists.UpdatedBand.Name },
+                { "IsBand", TestDataGraph.Artists.UpdatedBand.IsBand.ToString() },
+                { "IsPrinciple", TestDataGraph.Artists.UpdatedBand.IsPrinciple.ToString() }
+            });
 
-        //    // Act
-        //    var response = await Client.PostAsync("/artists/edit/" + formData["ArtistId"], new FormUrlEncodedContent(formData));
-        //    var responseString = await response.Content.ReadAsStringAsync();
+            // Act
+            var response = await Client.PostAsync("/artists/edit/" + formData["ArtistId"], new FormUrlEncodedContent(formData));
+            var responseString = await response.Content.ReadAsStringAsync();
 
-        //    // Assert
-        //    Assert.False(response.IsSuccessStatusCode);
-        //    Assert.Equal(HttpStatusCode.Found, response.StatusCode);
-        //    Assert.Equal("/artists", response.Headers.Location.ToString());
-        //    Assert.Equal(string.Empty, responseString);
-        //}
+            // Assert
+            Assert.False(response.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+            Assert.Equal("/artists", response.Headers.Location.ToString());
+            Assert.Equal(string.Empty, responseString);
+        }
 
-        //[Fact]
-        //public async Task EditPost_WhenArtistWasOriginallyAlias_ShouldReturnFoundStatusAndRedirectionLocationToAll()
-        //{
-        //    // Arrange
-        //    var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
-        //    {
-        //        { "ArtistId", TestDataGraph.Artists.UpdatedAlias.ArtistId.ToString() },
-        //        { "Name", TestDataGraph.Artists.UpdatedAlias.Name },
-        //        { "IsBand", TestDataGraph.Artists.UpdatedAlias.IsBand.ToString() },
-        //        { "IsPrinciple", TestDataGraph.Artists.UpdatedAlias.IsPrinciple.ToString() },
-        //        { "PrincipalArtistId", TestDataGraph.Artists.UpdatedAlias.PrincipalArtistId.ToString() }
-        //    });
+        [Fact]
+        public async Task EditPost_WhenArtistWasOriginallyAlias_ShouldReturnFoundStatusAndRedirectionLocationToAll()
+        {
+            // Arrange
+            var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
+            {
+                { "ArtistId", TestDataGraph.Artists.UpdatedAlias.ArtistId.ToString() },
+                { "Name", TestDataGraph.Artists.UpdatedAlias.Name },
+                { "IsBand", TestDataGraph.Artists.UpdatedAlias.IsBand.ToString() },
+                { "IsPrinciple", TestDataGraph.Artists.UpdatedAlias.IsPrinciple.ToString() },
+                { "PrincipalArtistId", TestDataGraph.Artists.UpdatedAlias.PrincipalArtistId.ToString() }
+            });
 
-        //    // Act
-        //    var response = await Client.PostAsync("/artists/edit/" + formData["ArtistId"], new FormUrlEncodedContent(formData));
-        //    var responseString = await response.Content.ReadAsStringAsync();
+            // Act
+            var response = await Client.PostAsync("/artists/edit/" + formData["ArtistId"], new FormUrlEncodedContent(formData));
+            var responseString = await response.Content.ReadAsStringAsync();
 
-        //    // Assert
-        //    Assert.False(response.IsSuccessStatusCode);
-        //    Assert.Equal(HttpStatusCode.Found, response.StatusCode);
-        //    Assert.Equal("/artists", response.Headers.Location.ToString());
-        //    Assert.Equal(string.Empty, responseString);
-        //}
-
-        #endregion "Commented tests with same approach for additional subtypes"
+            // Assert
+            Assert.False(response.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+            Assert.Equal("/artists", response.Headers.Location.ToString());
+            Assert.Equal(string.Empty, responseString);
+        }
 
         [Fact]
         public async Task EditPost_ShouldReturnErrorWhenCalledWithBadId()
@@ -284,7 +281,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Assert
             Assert.False(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-            Assert.Contains(ErrorMessages.DbUpdateConcurrencyExceptionDoesNotExist, responseString);
+            Assert.Contains(ErrorMessages.ArtistIdForUpdateDoesNotExist, responseString);
         }
 
         [Fact]
