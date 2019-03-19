@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -65,7 +66,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
         }
 
         // TODO: Come back to this test to drive out additional Put methods for controller
-        [Fact(Skip = Explainations.DbConcurrencyExceptionFromInMemoryDb)]
+        [Fact]
         public async Task PutArtist_WhenArtistWasOriginallySolo_ShouldReturnNoContentResult()
         {
             // Arrange
@@ -82,45 +83,42 @@ namespace Tuneage.WebApi.Tests.Integration.Api
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
             Assert.Equal(string.Empty, responseString);
         }
-        #region "Commented tests with same approach for additional subtypes"
 
-        //[Fact]
-        //public async Task PutArtist_WhenArtistWasOriginallyBand_ShouldReturnNoContentResult()
-        //{
-        //    // Arrange
-        //    await EnsureAntiforgeryTokenHeader();
-        //    var updatedBand = TestDataGraph.Artists.UpdatedBand;
-        //    var contents = new StringContent(JsonConvert.SerializeObject(updatedBand), Encoding.UTF8, "application/json");
+        [Fact]
+        public async Task PutArtist_WhenArtistWasOriginallyBand_ShouldReturnNoContentResult()
+        {
+            // Arrange
+            await EnsureAntiforgeryTokenHeader();
+            var updatedBand = TestDataGraph.Artists.UpdatedBand;
+            var contents = new StringContent(JsonConvert.SerializeObject(updatedBand), Encoding.UTF8, "application/json");
 
-        //    // Act
-        //    var response = await Client.PutAsync("/api/artists/" + updatedBand.ArtistId, contents);
-        //    var responseString = await response.Content.ReadAsStringAsync();
+            // Act
+            var response = await Client.PutAsync("/api/artists/" + updatedBand.ArtistId, contents);
+            var responseString = await response.Content.ReadAsStringAsync();
 
-        //    // Assert
-        //    response.EnsureSuccessStatusCode();
-        //    Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-        //    Assert.Equal(string.Empty, responseString);
-        //}
+            // Assert
+            response.EnsureSuccessStatusCode();
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            Assert.Equal(string.Empty, responseString);
+        }
 
-        //[Fact]
-        //public async Task PutArtist_WhenArtistWasOriginallyAlias_ShouldReturnNoContentResult()
-        //{
-        //    // Arrange
-        //    await EnsureAntiforgeryTokenHeader();
-        //    var updatedAlias = TestDataGraph.Artists.UpdatedAlias;
-        //    var contents = new StringContent(JsonConvert.SerializeObject(updatedAlias), Encoding.UTF8, "application/json");
+        [Fact]
+        public async Task PutArtist_WhenArtistWasOriginallyAlias_ShouldReturnNoContentResult()
+        {
+            // Arrange
+            await EnsureAntiforgeryTokenHeader();
+            var updatedAlias = TestDataGraph.Artists.UpdatedAlias;
+            var contents = new StringContent(JsonConvert.SerializeObject(updatedAlias), Encoding.UTF8, "application/json");
 
-        //    // Act
-        //    var response = await Client.PutAsync("/api/artists/" + updatedAlias.ArtistId, contents);
-        //    var responseString = await response.Content.ReadAsStringAsync();
+            // Act
+            var response = await Client.PutAsync("/api/artists/" + updatedAlias.ArtistId, contents);
+            var responseString = await response.Content.ReadAsStringAsync();
 
-        //    // Assert
-        //    response.EnsureSuccessStatusCode();
-        //    Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-        //    Assert.Equal(string.Empty, responseString);
-        //}
-
-        #endregion "Commented tests with same approach for additional subtypes"
+            // Assert
+            response.EnsureSuccessStatusCode();
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            Assert.Equal(string.Empty, responseString);
+        }
 
         [Fact]
         public async Task PutArtist_ShouldReturnBadRequestResultWhenCalledWithNonMatchingIdData()
@@ -204,6 +202,8 @@ namespace Tuneage.WebApi.Tests.Integration.Api
             var newAlias = TestDataGraph.Artists.NewAliasedArtist;
             newAlias.ArtistId = TestDataGraph.Artists.ArtistsRaw.Count + 1;
             var contents = new StringContent(JsonConvert.SerializeObject(newAlias), Encoding.UTF8, "application/json");
+            var newAliasSerializedAndCleaned = JsonConvert.SerializeObject(newAlias)
+                .Replace("\"PrincipalArtist\":null,", string.Empty);
 
             // Act
             var response = await Client.PostAsync("api/artists", contents);
@@ -212,7 +212,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
 
             // Assert
             response.EnsureSuccessStatusCode();
-            Assert.Equal(JsonConvert.SerializeObject(addedArtist), JsonConvert.SerializeObject(newAlias));
+            Assert.Equal(JsonConvert.SerializeObject(addedArtist), newAliasSerializedAndCleaned);
 
             // Act
             var response2 = await Client.GetAsync("/api/artists/" + newAlias.ArtistId);
@@ -221,7 +221,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
 
             // Assert
             response2.EnsureSuccessStatusCode();
-            Assert.Equal(JsonConvert.SerializeObject(newAlias), JsonConvert.SerializeObject(returnedArtist));
+            Assert.Equal(newAliasSerializedAndCleaned, JsonConvert.SerializeObject(returnedArtist));
         }
 
         [Fact]

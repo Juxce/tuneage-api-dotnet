@@ -102,7 +102,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             var result = await _controller.PutArtist(_existingArtistUpdated.ArtistId, _existingArtistUpdated);
 
             // Assert
-            _mockRepository.Verify(mr => mr.SetModified(_existingArtistUpdated), Times.Once);
+            _mockRepository.Verify(mr => mr.SetModified(It.IsAny<Artist>()), Times.Once);
             Assert.IsType<NoContentResult>(result);
         }
 

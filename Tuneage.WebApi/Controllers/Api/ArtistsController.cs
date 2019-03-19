@@ -46,53 +46,32 @@ namespace Tuneage.WebApi.Controllers.Api
 
         // PUT: api/Artists/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutArtist(int id, Artist artist)
+        public async Task<IActionResult> PutArtist(int id, Artist modifiedArtist)
         {
-            if (id != artist.ArtistId)
+            if (id != modifiedArtist.ArtistId)
             {
                 return BadRequest();
             }
 
-            _repository.SetModified(artist);
-
             try
             {
-                var existingArtist = await _repository.GetById(id);
-                if (existingArtist != null)
+                var preExistingArtist = await _repository.GetById(id);
+                if (preExistingArtist != null)
                 {
-                    switch (artist.GetType().ToString())
+                    switch (preExistingArtist.GetType().ToString())
                     {
                         case ArtistTypes.SoloArtist:
-                            var updatedSoloArtist = new SoloArtist()
-                            {
-                                ArtistId = artist.ArtistId,
-                                Name = artist.Name,
-                                IsBand = artist.IsBand,
-                                IsPrinciple = artist.IsPrinciple
-                            };
-                            await _repository.Update(id, updatedSoloArtist);
+                            _repository.SetModified(_service.TransformSoloArtistForUpdate((SoloArtist)preExistingArtist, modifiedArtist));
                             break;
                         case ArtistTypes.Band:
-                            var updatedBand = new Band()
-                            {
-                                ArtistId = artist.ArtistId,
-                                Name = artist.Name,
-                                IsBand = artist.IsBand,
-                                IsPrinciple = artist.IsPrinciple
-                            };
-                            await _repository.Update(id, updatedBand);
+                            _repository.SetModified(_service.TransformBandForUpdate((Band)preExistingArtist, modifiedArtist));
                             break;
                         case ArtistTypes.AliasedArtist:
-                            var updatedAlias = new Band()
-                            {
-                                ArtistId = artist.ArtistId,
-                                Name = artist.Name,
-                                IsBand = artist.IsBand,
-                                IsPrinciple = artist.IsPrinciple
-                            };
-                            await _repository.Update(id, updatedAlias);
+                            _repository.SetModified(_service.TransformAliasForUpdate((AliasedArtist)preExistingArtist, modifiedArtist));
                             break;
                     }
+
+                    await _repository.SaveChangesAsync();
                 }
                 else
                 {

@@ -109,17 +109,17 @@ namespace Tuneage.Data.TestData
 
             public static readonly Artist ExistingArtist = Artist34;
 
-            public static readonly Artist NewBand = new Artist { ArtistId = 44, Name = "People Under The Stairs", IsBand = true, IsPrinciple = true };
+            public static readonly Artist NewBand = new Band { ArtistId = 44, Name = "People Under The Stairs", IsBand = true, IsPrinciple = true };
 
-            public static readonly Artist NewSoloArtist = new Artist { ArtistId = 45, Name = "Frank Zappa", IsBand = false, IsPrinciple = true };
+            public static readonly Artist NewSoloArtist = new SoloArtist { ArtistId = 45, Name = "Frank Zappa", IsBand = false, IsPrinciple = true };
 
-            public static readonly Artist NewAliasedArtist = new Artist { ArtistId = 46, Name = "Crustified Dibbs", IsBand = false, IsPrinciple = false, PrincipalArtistId = 8 };
+            public static readonly Artist NewAliasedArtist = new AliasedArtist { ArtistId = 46, Name = "Crustified Dibbs", IsBand = false, IsPrinciple = false, PrincipalArtistId = 8 };
 
-            public static readonly Artist UpdatedSoloArtist = new SoloArtist() { ArtistId = 18, Name = "Q-Tip UPDATED", IsBand = true, IsPrinciple = false };
+            public static readonly Artist UpdatedSoloArtist = new SoloArtist { ArtistId = 18, Name = "Q-Tip UPDATED", IsBand = true, IsPrinciple = false };
 
             public static readonly Artist UpdatedBand = new Band { ArtistId = 17, Name = "Company Flow UPDATED", IsBand = false, IsPrinciple = false };
 
-            public static readonly Artist UpdatedAlias = new AliasedArtist() { ArtistId = 26, Name = "Quasimoto UPDATED", IsBand = true, IsPrinciple = true, PrincipalArtistId = null };
+            public static readonly Artist UpdatedAlias = new AliasedArtist { ArtistId = 26, Name = "Quasimoto UPDATED", IsBand = true, IsPrinciple = true, PrincipalArtistId = null };
 
             public const int NonExistentArtistId = 8675309;
         }

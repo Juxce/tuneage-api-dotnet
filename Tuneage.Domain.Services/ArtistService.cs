@@ -1,12 +1,13 @@
-﻿using Tuneage.Data.Constants;
-using Tuneage.Domain.Entities;
+﻿using Tuneage.Domain.Entities;
 
 namespace Tuneage.Domain.Services
 {
     public interface IArtistService
     {
         Artist TransformArtistForCreation(Artist newArtist);
-        //Artist TransformArtistForUpdate(Artist modifiedArtist);
+        SoloArtist TransformSoloArtistForUpdate(SoloArtist preExistingArtist, Artist modifiedArtist);
+        Band TransformBandForUpdate(Band preExistingArtist, Artist modifiedArtist);
+        AliasedArtist TransformAliasForUpdate(AliasedArtist preExistingArtist, Artist modifiedArtist);
     }
 
     public class ArtistService : IArtistService
@@ -26,49 +27,46 @@ namespace Tuneage.Domain.Services
                 if (newArtist.IsBand)
                     transformedArtist = new Band()
                     {
-                        ArtistId = newArtist.ArtistId, Name = newArtist.Name, IsBand = true, IsPrinciple = newArtist.IsPrinciple
+                        ArtistId = newArtist.ArtistId, Name = newArtist.Name, IsBand = true, IsPrinciple = true
                     };
                 else
                     transformedArtist = new SoloArtist()
                     {
-                        ArtistId = newArtist.ArtistId, Name = newArtist.Name, IsBand = false, IsPrinciple = newArtist.IsPrinciple
+                        ArtistId = newArtist.ArtistId, Name = newArtist.Name, IsBand = false, IsPrinciple = true
                     };
             }
 
             return transformedArtist;
         }
 
-        //public virtual Artist TransformArtistForUpdate(Artist modifiedArtist)
-        //{
+        public virtual SoloArtist TransformSoloArtistForUpdate(SoloArtist preExistingArtist, Artist modifiedArtist)
+        {
+            preExistingArtist.Name = modifiedArtist.Name;
+            preExistingArtist.IsBand = modifiedArtist.IsBand;
+            preExistingArtist.IsPrinciple = modifiedArtist.IsPrinciple;
+            preExistingArtist.PrincipalArtistId = modifiedArtist.PrincipalArtistId;
 
-        //    Artist transformedArtist = null;
+            return preExistingArtist;
+        }
 
-        //    switch (modifiedArtist.GetType().ToString())
-        //    {
-        //        case ArtistTypes.SoloArtist:
-        //            transformedArtist = new SoloArtist()
-        //            {
-        //                ArtistId = modifiedArtist.ArtistId, Name = modifiedArtist.Name, IsBand = modifiedArtist.IsBand,
-        //                IsPrinciple = modifiedArtist.IsPrinciple, PrincipalArtistId = modifiedArtist.PrincipalArtistId
-        //            };
-        //            break;
-        //        case ArtistTypes.Band:
-        //            transformedArtist = new Band()
-        //            {
-        //                ArtistId = modifiedArtist.ArtistId, Name = modifiedArtist.Name, IsBand = modifiedArtist.IsBand,
-        //                IsPrinciple = modifiedArtist.IsPrinciple, PrincipalArtistId = modifiedArtist.PrincipalArtistId
-        //            };
-        //            break;
-        //        case ArtistTypes.AliasedArtist:
-        //            transformedArtist = new AliasedArtist()
-        //            {
-        //                ArtistId = modifiedArtist.ArtistId, Name = modifiedArtist.Name, IsBand = modifiedArtist.IsBand,
-        //                IsPrinciple = modifiedArtist.IsPrinciple, PrincipalArtistId = modifiedArtist.PrincipalArtistId
-        //            };
-        //            break;
-        //    }
+        public virtual Band TransformBandForUpdate(Band preExistingArtist, Artist modifiedArtist)
+        {
+            preExistingArtist.Name = modifiedArtist.Name;
+            preExistingArtist.IsBand = modifiedArtist.IsBand;
+            preExistingArtist.IsPrinciple = modifiedArtist.IsPrinciple;
+            preExistingArtist.PrincipalArtistId = modifiedArtist.PrincipalArtistId;
 
-        //    return transformedArtist;
-        //}
+            return preExistingArtist;
+        }
+
+        public virtual AliasedArtist TransformAliasForUpdate(AliasedArtist preExistingArtist, Artist modifiedArtist)
+        {
+            preExistingArtist.Name = modifiedArtist.Name;
+            preExistingArtist.IsBand = modifiedArtist.IsBand;
+            preExistingArtist.IsPrinciple = modifiedArtist.IsPrinciple;
+            preExistingArtist.PrincipalArtistId = modifiedArtist.PrincipalArtistId;
+
+            return preExistingArtist;
+        }
     }
 }

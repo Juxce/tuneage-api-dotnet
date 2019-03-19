@@ -49,7 +49,7 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
         }
 
         [Fact]
-        public async void Create_WhenBand_ShouldCallContextToAddAndSave()
+        public async Task Create_WhenBand_ShouldCallContextToAddAndSave()
         {
             // Arrange
             var newBand = new Band { ArtistId = _newBand.ArtistId, Name = _newBand.Name };
@@ -63,7 +63,7 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
         }
 
         [Fact]
-        public async void Create_WhenSoloArtist_ShouldCallContextToAddAndSave()
+        public async Task Create_WhenSoloArtist_ShouldCallContextToAddAndSave()
         {
             // Arrange
             var newSoloArtist = new SoloArtist { ArtistId = _newSoloArtist.ArtistId, Name = _newSoloArtist.Name };
@@ -77,7 +77,7 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
         }
 
         [Fact]
-        public async void Create_WhenAlias_ShouldCallContextToAddAndSave()
+        public async Task Create_WhenAlias_ShouldCallContextToAddAndSave()
         {
             // Arrange
             var newAliasedArtist = new AliasedArtist() { ArtistId = _newSoloArtist.ArtistId, Name = _newSoloArtist.Name, PrincipalArtistId = _newAlias.PrincipalArtistId };
