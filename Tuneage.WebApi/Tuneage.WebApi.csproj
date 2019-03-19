@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tuneage.Data\Tuneage.Data.csproj" />
+    <ProjectReference Include="..\Tuneage.Domain.Services\Tuneage.Domain.Services.csproj" />
     <ProjectReference Include="..\Tuneage.Domain\Tuneage.Domain.csproj" />
   </ItemGroup>
 

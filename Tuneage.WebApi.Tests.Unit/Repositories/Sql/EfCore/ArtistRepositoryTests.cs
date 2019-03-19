@@ -13,13 +13,13 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
 {
     public class ArtistRepositoryTests : UnitTestFixture
     {
-        private readonly Mock<DbSet<Artist>> _mockLabelSet;
+        private readonly Mock<DbSet<Artist>> _mockArtistSet;
         private readonly ArtistRepository _repository;
         private readonly Artist _newBand, _newSoloArtist, _newAlias;
 
         public ArtistRepositoryTests()
         {
-            _mockLabelSet = new Mock<DbSet<Artist>>();
+            _mockArtistSet = new Mock<DbSet<Artist>>();
 
             _newBand = TestDataGraph.Artists.NewBand;
             _newSoloArtist = TestDataGraph.Artists.NewSoloArtist;
@@ -27,9 +27,9 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
             var artists = TestDataGraph.Artists.ArtistsRaw;
             var data = artists.AsQueryable();
 
-            SetupMockDbSet(_mockLabelSet, data);
+            SetupMockDbSet(_mockArtistSet, data);
 
-            SetupMockSetOnMockContext(_mockLabelSet);
+            SetupMockSetOnMockContext(_mockArtistSet);
 
             _repository = new ArtistRepository(MockContext.Object);
         }
@@ -58,7 +58,7 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
             await _repository.Create(newBand);
 
             // Assert
-            _mockLabelSet.Verify(mls => mls.AddAsync(newBand, It.IsAny<CancellationToken>()), Times.Once);
+            _mockArtistSet.Verify(mas => mas.AddAsync(newBand, It.IsAny<CancellationToken>()), Times.Once);
             MockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
 
@@ -72,7 +72,7 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
             await _repository.Create(newSoloArtist);
 
             // Assert
-            _mockLabelSet.Verify(mls => mls.AddAsync(newSoloArtist, It.IsAny<CancellationToken>()), Times.Once);
+            _mockArtistSet.Verify(mas => mas.AddAsync(newSoloArtist, It.IsAny<CancellationToken>()), Times.Once);
             MockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
 
@@ -86,7 +86,7 @@ namespace Tuneage.WebApi.Tests.Unit.Repositories.Sql.EfCore
             await _repository.Create(newAliasedArtist);
 
             // Assert
-            _mockLabelSet.Verify(mls => mls.AddAsync(newAliasedArtist, It.IsAny<CancellationToken>()), Times.Once);
+            _mockArtistSet.Verify(mas => mas.AddAsync(newAliasedArtist, It.IsAny<CancellationToken>()), Times.Once);
             MockContext.Verify(mc => mc.SaveChangesAsync(It.IsAny<CancellationToken>()));
         }
     }

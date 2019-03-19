@@ -50,6 +50,11 @@ namespace Tuneage.Data.Constants
             The collection is of the parent type, but shows subtypes inside at runtime, as expected, but it doesn't seem like the in-memory
             database acts like the actual MSSQL database does in these instances at runtime. These types of edits work fine when manually testing
             both API and MVC endpoints for these cases, but fail when done in integration tests using the in-memory database. The error happens
-            for both API tests that use HttpClient.PutAsync() as well as MVC tests that use HttpClient.PostAsync(). Shrug.";
+            for both API tests that use HttpClient.PutAsync() as well as MVC tests that use HttpClient.PostAsync(). Shrug. UPDATE! Via further
+            debugging, it seems that the standard Put methods on the controllers using the base type are the source of this problem. For example,
+            when an update is called on a SoloArtist, it will be cast to Artist inside the controller method, and this seems to be what is creating
+            errors with InMemoryDb, as it expects that ID to be a SoloArtist, and will error when these don't match. So, PERHAPS the right
+            solution here is to create multiple routes, and matching controller methods, for Puts, one for each sub-type that would need to be
+            updated.";
     }
 }

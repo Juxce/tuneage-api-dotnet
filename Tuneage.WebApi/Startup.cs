@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Tuneage.Data.Orm.EF.DataContexts;
 using Tuneage.Data.Repositories.Sql.EfCore;
 using Tuneage.Data.TestData;
+using Tuneage.Domain.Services;
 
 namespace Tuneage.WebApi
 {
@@ -39,6 +41,9 @@ namespace Tuneage.WebApi
             services.AddTransient<ILabelRepository, LabelRepository>();
             services.AddTransient<IArtistRepository, ArtistRepository>();
             services.AddTransient<IReleaseRepository, ReleaseRepository>();
+
+            // Custom code to register domain-specific services with ASP.NET Core's dependency injection IServiceCollection container
+            services.AddTransient<IArtistService, ArtistService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

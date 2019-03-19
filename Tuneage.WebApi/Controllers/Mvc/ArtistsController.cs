@@ -5,16 +5,19 @@ using Microsoft.EntityFrameworkCore;
 using Tuneage.Data.Constants;
 using Tuneage.Data.Repositories.Sql.EfCore;
 using Tuneage.Domain.Entities;
+using Tuneage.Domain.Services;
 
 namespace Tuneage.WebApi.Controllers.Mvc
 {
     public class ArtistsController : Controller
     {
         private readonly IArtistRepository _repository;
+        private readonly IArtistService _service;
 
-        public ArtistsController(IArtistRepository repository)
+        public ArtistsController(IArtistRepository repository, IArtistService service)
         {
             _repository = repository;
+            _service = service;
         }
 
         // GET: Artists
@@ -55,17 +58,7 @@ namespace Tuneage.WebApi.Controllers.Mvc
         {
             if (ModelState.IsValid)
             {
-                if (!artist.IsPrinciple)
-                    await _repository.Create(new AliasedArtist()
-                        { ArtistId = artist.ArtistId, Name = artist.Name, IsBand = artist.IsBand, PrincipalArtistId = artist.PrincipalArtistId }
-                    );
-                else
-                {
-                    if (artist.IsBand)
-                        await _repository.Create(new Band() { ArtistId = artist.ArtistId, Name = artist.Name });
-                    else
-                        await _repository.Create(new SoloArtist() { ArtistId = artist.ArtistId, Name = artist.Name });
-                }
+                await _repository.Create(_service.TransformArtistForCreation(artist));
 
                 return RedirectToAction(nameof(Index));
             }
