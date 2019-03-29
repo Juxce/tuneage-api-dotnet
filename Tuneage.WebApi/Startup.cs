@@ -44,6 +44,7 @@ namespace Tuneage.WebApi
 
             // Custom code to register domain-specific services with ASP.NET Core's dependency injection IServiceCollection container
             services.AddTransient<IArtistService, ArtistService>();
+            services.AddTransient<IReleaseService, ReleaseService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -19,20 +19,29 @@ namespace Tuneage.Domain.Services
             if (!newArtist.IsPrinciple)
                 transformedArtist = new AliasedArtist()
                     {
-                        ArtistId = newArtist.ArtistId, Name = newArtist.Name, IsBand = newArtist.IsBand,
-                        IsPrinciple = newArtist.IsPrinciple, PrincipalArtistId = newArtist.PrincipalArtistId
+                        ArtistId = newArtist.ArtistId,
+                        Name = newArtist.Name,
+                        IsBand = newArtist.IsBand,
+                        IsPrinciple = newArtist.IsPrinciple,
+                        PrincipalArtistId = newArtist.PrincipalArtistId
                     };
             else
             {
                 if (newArtist.IsBand)
                     transformedArtist = new Band()
                     {
-                        ArtistId = newArtist.ArtistId, Name = newArtist.Name, IsBand = true, IsPrinciple = true
+                        ArtistId = newArtist.ArtistId,
+                        Name = newArtist.Name,
+                        IsBand = true,
+                        IsPrinciple = true
                     };
                 else
                     transformedArtist = new SoloArtist()
                     {
-                        ArtistId = newArtist.ArtistId, Name = newArtist.Name, IsBand = false, IsPrinciple = true
+                        ArtistId = newArtist.ArtistId,
+                        Name = newArtist.Name,
+                        IsBand = false,
+                        IsPrinciple = true
                     };
             }
 

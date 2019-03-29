@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Tuneage.Data.Constants;
 using Tuneage.Data.Orm.EF.DataContexts;
 using Tuneage.Domain.Entities;
 

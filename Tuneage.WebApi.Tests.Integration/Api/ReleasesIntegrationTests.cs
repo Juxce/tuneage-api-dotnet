@@ -65,7 +65,7 @@ namespace Tuneage.WebApi.Tests.Integration.Api
             Assert.Equal(string.Empty, responseString);
         }
 
-        [Fact(Skip = Explainations.DbConcurrencyExceptionFromInMemoryDb)]
+        [Fact]
         public async Task PutRelease_WhenReleaseWasOriginallySingleArtist_ShouldReturnNoContentResult()
         {
             // Arrange
@@ -82,27 +82,24 @@ namespace Tuneage.WebApi.Tests.Integration.Api
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
             Assert.Equal(string.Empty, responseString);
         }
-        #region "Commented tests with same approach for additional subtypes"
 
-        //[Fact]
-        //public async Task PutRelease_WhenReleaseWasOriginallyVariousArtists_ShouldReturnNoContentResult()
-        //{
-        //    // Arrange
-        //    await EnsureAntiforgeryTokenHeader();
-        //    var updatedVariousArtistsRelease = TestDataGraph.Releases.UpdatedVariousArtistsRelease;
-        //    var contents = new StringContent(JsonConvert.SerializeObject(updatedVariousArtistsRelease), Encoding.UTF8, "application/json");
+        [Fact]
+        public async Task PutRelease_WhenReleaseWasOriginallyVariousArtists_ShouldReturnNoContentResult()
+        {
+            // Arrange
+            await EnsureAntiforgeryTokenHeader();
+            var updatedVariousArtistsRelease = TestDataGraph.Releases.UpdatedVariousArtistsRelease;
+            var contents = new StringContent(JsonConvert.SerializeObject(updatedVariousArtistsRelease), Encoding.UTF8, "application/json");
 
-        //    // Act
-        //    var response = await Client.PutAsync("/api/releases/" + updatedVariousArtistsRelease.ReleaseId, contents);
-        //    var responseString = await response.Content.ReadAsStringAsync();
+            // Act
+            var response = await Client.PutAsync("/api/releases/" + updatedVariousArtistsRelease.ReleaseId, contents);
+            var responseString = await response.Content.ReadAsStringAsync();
 
-        //    // Assert
-        //    response.EnsureSuccessStatusCode();
-        //    Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-        //    Assert.Equal(string.Empty, responseString);
-        //}
-
-        #endregion "Commented tests with same approach for additional subtypes"
+            // Assert
+            response.EnsureSuccessStatusCode();
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            Assert.Equal(string.Empty, responseString);
+        }
 
         [Fact]
         public async Task PutRelease_ShouldReturnBadRequestResultWhenCalledWithNonMatchingIdData()

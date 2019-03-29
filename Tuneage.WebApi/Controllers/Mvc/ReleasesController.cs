@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Tuneage.Data.Constants;
 using Tuneage.Data.Repositories.Sql.EfCore;
 using Tuneage.Domain.Entities;
+using Tuneage.Domain.Services;
 
 namespace Tuneage.WebApi.Controllers.Mvc
 {
@@ -16,12 +17,14 @@ namespace Tuneage.WebApi.Controllers.Mvc
         private readonly ILabelRepository _labelRepository;
         private readonly IArtistRepository _artistRepository;
         private readonly IReleaseRepository _releaseRepository;
+        private readonly IReleaseService _releaseService;
 
-        public ReleasesController(ILabelRepository labelRepository, IArtistRepository artistRepository, IReleaseRepository releaseRepository)
+        public ReleasesController(ILabelRepository labelRepository, IArtistRepository artistRepository, IReleaseRepository releaseRepository, IReleaseService releaseService)
         {
             _labelRepository = labelRepository;
             _artistRepository = artistRepository;
             _releaseRepository = releaseRepository;
+            _releaseService = releaseService;
         }
 
         // GET: Releases
@@ -64,18 +67,7 @@ namespace Tuneage.WebApi.Controllers.Mvc
         {
             if (ModelState.IsValid)
             {
-                if (release.IsByVariousArtists)
-                    await _releaseRepository.Create(new VariousArtistsRelease
-                    {
-                        ReleaseId = release.ReleaseId, LabelId = release.LabelId, Title = release.Title,
-                        YearReleased = release.YearReleased
-                    });
-                else
-                    await _releaseRepository.Create(new SingleArtistRelease
-                    {
-                        ReleaseId = release.ReleaseId, LabelId = release.LabelId, Title = release.Title,
-                        YearReleased = release.YearReleased, ArtistId = release.ArtistId
-                    });
+                await _releaseRepository.Create(_releaseService.TransformReleaseForCreation(release));
 
                 return RedirectToAction(nameof(Index));
             }
@@ -110,9 +102,9 @@ namespace Tuneage.WebApi.Controllers.Mvc
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ReleaseId,Title,YearReleased,ReleasedOn,LabelId,IsByVariousArtists,ArtistId")] Release release)
+        public async Task<IActionResult> Edit(int id, [Bind("ReleaseId,Title,YearReleased,ReleasedOn,LabelId,IsByVariousArtists,ArtistId")] Release modifiedRelease)
         {
-            if (id != release.ReleaseId)
+            if (id != modifiedRelease.ReleaseId)
             {
                 return NotFound();
             }
@@ -121,11 +113,33 @@ namespace Tuneage.WebApi.Controllers.Mvc
             {
                 try
                 {
-                    await _releaseRepository.Update(id, release);
+                    var preExistingRelease = await _releaseRepository.GetById(id);
+                    if (preExistingRelease != null)
+                    {
+                        switch (preExistingRelease.GetType().ToString())
+                        {
+                            case ReleaseTypes.SingleArtistRelease:
+                                _releaseRepository.SetModified(
+                                    _releaseService.TransformSingleArtistReleaseForUpdate((SingleArtistRelease)preExistingRelease, modifiedRelease)
+                                );
+                                break;
+                            case ReleaseTypes.VariousArtistsRelease:
+                                _releaseRepository.SetModified(
+                                    _releaseService.TransformVariousArtistsReleaseForUpdate((VariousArtistsRelease)preExistingRelease, modifiedRelease)
+                                );
+                                break;
+                        }
+                            
+                        await _releaseRepository.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        throw new Exception(ErrorMessages.ReleaseIdForUpdateDoesNotExist);
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ReleaseExists(release.ReleaseId))
+                    if (!ReleaseExists(modifiedRelease.ReleaseId))
                     {
                         return NotFound();
                     }
@@ -139,9 +153,9 @@ namespace Tuneage.WebApi.Controllers.Mvc
 
             var artistStack = GetArtistStackForCreateAndEdit(_artistRepository.GetAllAlphabetical().Result);
 
-            ViewData["LabelId"] = new SelectList(_labelRepository.GetAllAlphabetical().Result, "LabelId", "Name", release.LabelId);
-            ViewData["ArtistId"] = new SelectList(artistStack.ToList(), "ArtistId", "Name", release.ArtistId);
-            return View(release);
+            ViewData["LabelId"] = new SelectList(_labelRepository.GetAllAlphabetical().Result, "LabelId", "Name", modifiedRelease.LabelId);
+            ViewData["ArtistId"] = new SelectList(artistStack.ToList(), "ArtistId", "Name", modifiedRelease.ArtistId);
+            return View(modifiedRelease);
         }
 
         // GET: Releases/Delete/5

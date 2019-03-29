@@ -115,11 +115,11 @@ namespace Tuneage.Data.TestData
 
             public static readonly Artist NewAliasedArtist = new AliasedArtist { ArtistId = 46, Name = "Crustified Dibbs", IsBand = false, IsPrinciple = false, PrincipalArtistId = 8 };
 
-            public static readonly Artist UpdatedSoloArtist = new SoloArtist { ArtistId = 18, Name = "Q-Tip UPDATED", IsBand = true, IsPrinciple = false };
+            public static readonly SoloArtist UpdatedSoloArtist = new SoloArtist { ArtistId = 18, Name = "Q-Tip UPDATED", IsBand = true, IsPrinciple = false };
 
-            public static readonly Artist UpdatedBand = new Band { ArtistId = 17, Name = "Company Flow UPDATED", IsBand = false, IsPrinciple = false };
+            public static readonly Band UpdatedBand = new Band { ArtistId = 17, Name = "Company Flow UPDATED", IsBand = false, IsPrinciple = false };
 
-            public static readonly Artist UpdatedAlias = new AliasedArtist { ArtistId = 26, Name = "Quasimoto UPDATED", IsBand = true, IsPrinciple = true, PrincipalArtistId = null };
+            public static readonly AliasedArtist UpdatedAlias = new AliasedArtist { ArtistId = 26, Name = "Quasimoto UPDATED", IsBand = true, IsPrinciple = true, PrincipalArtistId = null };
 
             public const int NonExistentArtistId = 8675309;
         }
@@ -171,10 +171,10 @@ namespace Tuneage.Data.TestData
                 new Release { ReleaseId = 23, LabelId = 5, Title = "Life In The Fat Lane", YearReleased = 2000, IsByVariousArtists = true };
 
             public static readonly SingleArtistRelease UpdatedSingleArtistRelease = 
-                new SingleArtistRelease { ReleaseId = 9, LabelId = 5, Title = "The Yes Album UPDATED", YearReleased = 1777, ArtistId = 20 };
+                new SingleArtistRelease { ReleaseId = 9, LabelId = 5, Title = "The Yes Album UPDATED", YearReleased = 1777, IsByVariousArtists = false, ArtistId = 20 };
 
             public static readonly VariousArtistsRelease UpdatedVariousArtistsRelease =
-                new VariousArtistsRelease { ReleaseId = 4, LabelId = 13, Title = "Soundbombing II UPDATED", YearReleased = 1777 };
+                new VariousArtistsRelease { ReleaseId = 4, LabelId = 13, Title = "Soundbombing II UPDATED", YearReleased = 1777, IsByVariousArtists = true };
 
             public const int NonExistentReleaseId = 666;
         }

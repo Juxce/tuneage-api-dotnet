@@ -12,6 +12,7 @@ using Tuneage.Data.Constants;
 using Tuneage.Data.Repositories.Sql.EfCore;
 using Tuneage.Data.TestData;
 using Tuneage.Domain.Entities;
+using Tuneage.Domain.Services;
 using Tuneage.WebApi.Controllers.Mvc;
 using Xunit;
 
@@ -20,6 +21,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
     public class ReleasesControllerTests : UnitTestFixture
     {
         private readonly Mock<ReleaseRepository> _mockReleaseRepository;
+        private readonly Mock<ReleaseService> _mockReleaseService;
         private readonly ReleasesController _controller;
         private readonly Release _existingRelease, _existingReleaseUpdated, _newSingleArtistRelease, _newVariousArtistsRelease;
         protected const string DefaultViewActionName = "Index";
@@ -55,7 +57,9 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             _mockReleaseRepository.Setup(mrr => mrr.GetById(_existingRelease.ReleaseId)).Returns(Task.FromResult(_existingRelease));
             _mockReleaseRepository.Setup(mrr => mrr.GetById(_existingReleaseUpdated.ReleaseId)).Returns(Task.FromResult(_existingRelease));
 
-            _controller = new ReleasesController(mockLabelRepository.Object, mockArtistRepository.Object, _mockReleaseRepository.Object);
+            _mockReleaseService = new Mock<ReleaseService>();
+            
+            _controller = new ReleasesController(mockLabelRepository.Object, mockArtistRepository.Object, _mockReleaseRepository.Object, _mockReleaseService.Object);
         }
 
         [Fact]
@@ -140,6 +144,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
 
             // Assert
             _mockReleaseRepository.Verify(mr => mr.Create(It.IsAny<SingleArtistRelease>()), Times.Once);
+            _mockReleaseService.Verify(ms => ms.TransformReleaseForCreation(It.IsAny<Release>()), Times.Once);
             Assert.NotNull(redirectToActionResult);
             Assert.Equal(DefaultViewActionName, redirectToActionResult.ActionName);
         }
@@ -155,6 +160,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
 
             //Assert
             _mockReleaseRepository.Verify(mr => mr.Create(It.IsAny<VariousArtistsRelease>()), Times.Once);
+            _mockReleaseService.Verify(ms => ms.TransformReleaseForCreation(It.IsAny<Release>()), Times.Once);
             Assert.NotNull(redirectToActionResult);
             Assert.Equal(DefaultViewActionName, redirectToActionResult.ActionName);
         }
@@ -238,7 +244,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Mvc
             var redirectToActionResult = (RedirectToActionResult)result;
 
             //Assert
-            _mockReleaseRepository.Verify(mr => mr.Update(_existingReleaseUpdated.ReleaseId, _existingReleaseUpdated), Times.Once);
+            _mockReleaseRepository.Verify(mr => mr.SaveChangesAsync(), Times.Once);
             Assert.NotNull(redirectToActionResult);
             Assert.Equal(DefaultViewActionName, redirectToActionResult.ActionName);
         }

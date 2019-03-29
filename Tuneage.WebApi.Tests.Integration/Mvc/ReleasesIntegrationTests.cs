@@ -197,7 +197,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             Assert.Equal(string.Empty, responseString);
         }
 
-        [Fact(Skip = Explainations.DbConcurrencyExceptionFromInMemoryDb)]
+        [Fact]
         public async Task EditPost_WhenReleaseWasOriginallySingleArtist_ShouldReturnFoundStatusAndRedirectionLocationToAll()
         {
             // Arrange
@@ -220,32 +220,29 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             Assert.Equal("/releases", response.Headers.Location.ToString());
             Assert.Equal(string.Empty, responseString);
         }
-        #region "Commented tests with same approach for additional subtypes"
 
-        //[Fact]
-        //public async Task EditPost_WhenReleaseWasOriginallyVariousArtists_ShouldReturnFoundStatusAndRedirectionLocationToAll()
-        //{
-        //    // Arrange
-        //    var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
-        //    {
-        //        { "ReleaseId", TestDataGraph.Releases.UpdatedVariousArtistsRelease.ReleaseId.ToString() },
-        //        { "LabelId", TestDataGraph.Releases.UpdatedVariousArtistsRelease.LabelId.ToString() },
-        //        { "Title", TestDataGraph.Releases.UpdatedVariousArtistsRelease.Title },
-        //        { "YearReleased", TestDataGraph.Releases.UpdatedVariousArtistsRelease.YearReleased.ToString() }
-        //    });
+        [Fact]
+        public async Task EditPost_WhenReleaseWasOriginallyVariousArtists_ShouldReturnFoundStatusAndRedirectionLocationToAll()
+        {
+            // Arrange
+            var formData = await EnsureAntiforgeryTokenOnForm(new Dictionary<string, string>()
+            {
+                { "ReleaseId", TestDataGraph.Releases.UpdatedVariousArtistsRelease.ReleaseId.ToString() },
+                { "LabelId", TestDataGraph.Releases.UpdatedVariousArtistsRelease.LabelId.ToString() },
+                { "Title", TestDataGraph.Releases.UpdatedVariousArtistsRelease.Title },
+                { "YearReleased", TestDataGraph.Releases.UpdatedVariousArtistsRelease.YearReleased.ToString() }
+            });
 
-        //    // Act
-        //    var response = await Client.PostAsync("/releases/edit/" + formData["ReleaseId"], new FormUrlEncodedContent(formData));
-        //    var responseString = await response.Content.ReadAsStringAsync();
+            // Act
+            var response = await Client.PostAsync("/releases/edit/" + formData["ReleaseId"], new FormUrlEncodedContent(formData));
+            var responseString = await response.Content.ReadAsStringAsync();
 
-        //    // Assert
-        //    Assert.False(response.IsSuccessStatusCode);
-        //    Assert.Equal(HttpStatusCode.Found, response.StatusCode);
-        //    Assert.Equal("/artists", response.Headers.Location.ToString());
-        //    Assert.Equal(string.Empty, responseString);
-        //}
-
-        #endregion "Commented tests with same approach for additional subtypes"
+            // Assert
+            Assert.False(response.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.Found, response.StatusCode);
+            Assert.Equal("/releases", response.Headers.Location.ToString());
+            Assert.Equal(string.Empty, responseString);
+        }
 
         [Fact]
         public async Task EditPost_ShouldReturnErrorWhenCalledWithBadId()
@@ -267,7 +264,7 @@ namespace Tuneage.WebApi.Tests.Integration.Mvc
             // Assert
             Assert.False(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-            Assert.Contains(ErrorMessages.DbUpdateConcurrencyExceptionDoesNotExist, responseString);
+            Assert.Contains(ErrorMessages.ReleaseIdForUpdateDoesNotExist, responseString);
         }
 
         [Fact]

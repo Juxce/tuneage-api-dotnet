@@ -7,7 +7,7 @@ namespace Tuneage.WebApi.Tests.Unit.Services
 {
     public class ArtistServiceTests : UnitTestFixture
     {
-        private readonly ArtistService _service;
+        private readonly IArtistService _service;
 
         public ArtistServiceTests()
         {

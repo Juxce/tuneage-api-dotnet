@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Tuneage.Data.Constants;
 using Tuneage.Data.Repositories.Sql.EfCore;
 using Tuneage.Domain.Entities;
+using Tuneage.Domain.Services;
 
 namespace Tuneage.WebApi.Controllers.Api
 {
@@ -12,10 +15,12 @@ namespace Tuneage.WebApi.Controllers.Api
     public class ReleasesController : ControllerBase
     {
         private readonly IReleaseRepository _repository;
+        private readonly IReleaseService _service;
 
-        public ReleasesController(IReleaseRepository repository)
+        public ReleasesController(IReleaseRepository repository, IReleaseService service)
         {
             _repository = repository;
+            _service = service;
         }
 
         // GET: api/Releases
@@ -41,17 +46,33 @@ namespace Tuneage.WebApi.Controllers.Api
 
         // PUT: api/Releases/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRelease(int id, Release release)
+        public async Task<IActionResult> PutRelease(int id, Release modifiedRelease)
         {
-            if (id != release.ReleaseId)
+            if (id != modifiedRelease.ReleaseId)
             {
                 return BadRequest();
             }
 
-            _repository.SetModified(release);
-
             try
             {
+                var preExistingRelease = await _repository.GetById(id);
+                if (preExistingRelease != null)
+                {
+                    switch (preExistingRelease.GetType().ToString())
+                    {
+                        case ReleaseTypes.SingleArtistRelease:
+                            _repository.SetModified(_service.TransformSingleArtistReleaseForUpdate((SingleArtistRelease)preExistingRelease, modifiedRelease));
+                            break;
+                        case ReleaseTypes.VariousArtistsRelease:
+                            _repository.SetModified(_service.TransformVariousArtistsReleaseForUpdate((VariousArtistsRelease)preExistingRelease, modifiedRelease));
+                            break;
+                    }
+                }
+                else
+                {
+                    throw new Exception(ErrorMessages.ReleaseIdForUpdateDoesNotExist);
+                }
+
                 await _repository.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -73,18 +94,7 @@ namespace Tuneage.WebApi.Controllers.Api
         [HttpPost]
         public async Task<ActionResult<Release>> PostRelease(Release release)
         {
-            if (release.IsByVariousArtists)
-                await _repository.Create(new VariousArtistsRelease
-                {
-                    ReleaseId = release.ReleaseId, LabelId = release.LabelId, Title = release.Title,
-                    YearReleased = release.YearReleased
-                });
-            else
-                await _repository.Create(new SingleArtistRelease
-                {
-                    ReleaseId = release.ReleaseId, LabelId = release.LabelId, Title = release.Title,
-                    YearReleased = release.YearReleased, ArtistId = release.ArtistId
-                });
+            await _repository.Create(_service.TransformReleaseForCreation(release));
 
             return CreatedAtAction("GetRelease", new { id = release.ReleaseId }, release);
         }

@@ -34,22 +34,5 @@ namespace Tuneage.Data.Repositories.Sql.EfCore
         {
             return await DbContext.Releases.Include(r => r.Label).Include(r => r.Artist).FirstOrDefaultAsync(r => r.ReleaseId == id);
         }
-
-        public override async Task Create(Release entity)
-        {
-            switch (entity.GetType().ToString())
-            {
-                case ReleaseTypes.SingleArtistRelease:
-                    entity.IsByVariousArtists = false;
-                    break;
-                case ReleaseTypes.VariousArtistsRelease:
-                    entity.IsByVariousArtists = true;
-                    entity.ArtistId = null;
-                    break;
-            }
-
-            await DbContext.Set<Release>().AddAsync(entity);
-            await SaveChangesAsync();
-        }
     }
 }

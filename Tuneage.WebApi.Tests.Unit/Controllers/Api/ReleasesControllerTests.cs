@@ -8,6 +8,7 @@ using Moq;
 using Tuneage.Data.Repositories.Sql.EfCore;
 using Tuneage.Data.TestData;
 using Tuneage.Domain.Entities;
+using Tuneage.Domain.Services;
 using Tuneage.WebApi.Controllers.Api;
 using Xunit;
 
@@ -16,6 +17,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
     public class ReleasesControllerTests : UnitTestFixture
     {
         private readonly Mock<ReleaseRepository> _mockReleaseRepository;
+        private readonly Mock<ReleaseService> _mockReleaseService;
         private readonly ReleasesController _controller;
         private readonly Release _existingRelease, _existingReleaseUpdated, _newSingleArtistRelease, _newVariousArtistsRelease;
 
@@ -36,8 +38,11 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             _mockReleaseRepository = new Mock<ReleaseRepository>(MockContext.Object);
             _mockReleaseRepository.Setup(mrr => mrr.GetAllAlphabetical()).Returns(Task.FromResult(TestDataGraph.Releases.ReleasesAlphabetizedByTitle));
             _mockReleaseRepository.Setup(mrr => mrr.GetById(_existingRelease.ReleaseId)).Returns(Task.FromResult(_existingRelease));
+            _mockReleaseRepository.Setup(mrr => mrr.GetById(_existingReleaseUpdated.ReleaseId)).Returns(Task.FromResult(_existingReleaseUpdated));
 
-            _controller = new ReleasesController(_mockReleaseRepository.Object);
+            _mockReleaseService = new Mock<ReleaseService>();
+
+            _controller = new ReleasesController(_mockReleaseRepository.Object, _mockReleaseService.Object);
         }
 
         [Fact]
@@ -95,7 +100,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
             var result = await _controller.PutRelease(_existingReleaseUpdated.ReleaseId, _existingReleaseUpdated);
 
             // Assert
-            _mockReleaseRepository.Verify(mr => mr.SetModified(_existingReleaseUpdated), Times.Once);
+            _mockReleaseRepository.Verify(mr => mr.SetModified(It.IsAny<Release>()), Times.Once);
             _mockReleaseRepository.Verify(mr => mr.SaveChangesAsync(), Times.Once);
             Assert.IsType<NoContentResult>(result);
         }
@@ -124,6 +129,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
 
             // Assert
             _mockReleaseRepository.Verify(mr => mr.Create(It.IsAny<SingleArtistRelease>()), Times.Once);
+            _mockReleaseService.Verify(ms => ms.TransformReleaseForCreation(It.IsAny<Release>()), Times.Once);
             Assert.IsType<ActionResult<Release>>(result);
             Assert.IsType<CreatedAtActionResult>(result.Result);
             Assert.Equal(_newSingleArtistRelease, model);
@@ -141,6 +147,7 @@ namespace Tuneage.WebApi.Tests.Unit.Controllers.Api
 
             // Assert
             _mockReleaseRepository.Verify(mr => mr.Create(It.IsAny<VariousArtistsRelease>()), Times.Once);
+            _mockReleaseService.Verify(ms => ms.TransformReleaseForCreation(It.IsAny<Release>()), Times.Once);
             Assert.IsType<ActionResult<Release>>(result);
             Assert.IsType<CreatedAtActionResult>(result.Result);
             Assert.Equal(_newVariousArtistsRelease, model);
